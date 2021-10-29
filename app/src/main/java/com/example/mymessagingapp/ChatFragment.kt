@@ -14,7 +14,7 @@ import com.example.mymessagingapp.data.Group
 import com.example.mymessagingapp.data.User
 import androidx.recyclerview.widget.ListAdapter
 import java.util.concurrent.Executors
-
+sdf
 class ChatFragment : Fragment() {
     private lateinit var user : User
     private lateinit var group : Group
