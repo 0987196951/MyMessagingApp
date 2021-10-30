@@ -13,9 +13,9 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.firestore.ktx.toObjects
 import com.google.firebase.ktx.Firebase
 
-class ChatViewModel(val user: User, val group : Group) : ViewModelProvider.Factory{
+class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvider.Factory{
     private val db = Firebase.firestore
-    private lateinit var listMessage : LiveData<List<ChatMessage>>
+    lateinit var listMessage : LiveData<List<ChatMessage>>
     init {
         db.collection(CONSTANT.KEY_MESSAGE)
             .whereEqualTo("groupId" , group.groupId)

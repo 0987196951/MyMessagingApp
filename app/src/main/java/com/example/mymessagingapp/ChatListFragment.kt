@@ -24,14 +24,15 @@ class ChatListFragment : Fragment(){
     private lateinit var recyclerListConversation: RecyclerView
     private lateinit var recyclerViewAdapter: ConversationAdapter
     private lateinit var user : User
-    private lateinit var factory : ChatListViewModelFactory
+    private val factory : ChatListViewModelFactory by lazy {
+        ChatListViewModelFactory(user, requireContext(), layoutInflater)
+    }
     override fun onAttach(context: Context) {
         super.onAttach(context)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         user = arguments?.getSerializable(CONSTANT.KEY_USER) as User
-        factory = ChatListViewModelFactory(user,requireContext(),layoutInflater )
         recyclerViewAdapter = factory.conversationAdapter
     }
     override fun onCreateView(

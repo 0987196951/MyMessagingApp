@@ -10,18 +10,18 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <ImageView
-            android:id="@+id/receiverImageMessage"
+            android:id="@+id/imageMessage"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:cropToPadding="true"/>
         <TextView
-            android:id="@+id/receiverTextMessage"
+            android:id="@+id/contentMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/received_message"/>
     </LinearLayout>
     <TextView
-        android:id="@+id/timeReceiveMessage"
+        android:id="@+id/timeMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/time_message"/>
