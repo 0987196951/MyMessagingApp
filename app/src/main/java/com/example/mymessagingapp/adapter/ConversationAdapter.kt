@@ -12,8 +12,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
+import com.example.messapp.R
 import com.example.mymessagingapp.CONSTANT
-import com.example.mymessagingapp.R
 import com.example.mymessagingapp.data.Conversation
 import com.example.mymessagingapp.data.Group
 import com.example.mymessagingapp.data.User

@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">MessApp</string>
+    <string name="send">send</string>
+    <string name="received_message">received message</string>
+    <string name="time_message">time message</string>
+    <string name="sent_message">sent message</string>
+
 </resources>

@@ -28,5 +28,4 @@ class ChatViewModel(val user: User, val group : Group) : ViewModelProvider.Facto
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return modelClass.getConstructor(User::class.java, Group::class.java).newInstance(user, group)
     }
-
 }

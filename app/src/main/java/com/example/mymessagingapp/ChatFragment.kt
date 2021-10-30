@@ -1,6 +1,9 @@
 package com.example.mymessagingapp
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +16,11 @@ import com.example.mymessagingapp.data.ChatMessage
 import com.example.mymessagingapp.data.Group
 import com.example.mymessagingapp.data.User
 import androidx.recyclerview.widget.ListAdapter
+import com.example.messapp.R
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import java.util.concurrent.Executors
-sdf
+
 class ChatFragment : Fragment() {
     private lateinit var user : User
     private lateinit var group : Group
@@ -29,7 +35,6 @@ class ChatFragment : Fragment() {
         user = arguments?.getSerializable(CONSTANT.KEY_USER) as User
         group = arguments?.getSerializable(CONSTANT.KEY_GROUP) as Group
     }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -50,13 +55,20 @@ class ChatFragment : Fragment() {
     }
     private inner class ChatHolder(view : View) : RecyclerView.ViewHolder(view) {
         private lateinit var message : ChatMessage
-        private lateinit var imageSender : ImageView
+        private var imageSender = view.findViewById(R.id.)
         private lateinit var imageReceiver : ImageView
         private lateinit var contentMessage : TextView
-        private lateinit var timeSendMessage: TextView
-        private lateinit var timeReceiveMessage : TextView
+        private lateinit var timeMessage: TextView
         fun bind(chat: ChatMessage, viewType : Int){
+            this.message = message
 
+            if(viewType == CONSTANT.VIEW_TYPE_RECEIVED_MESSAGE){
+                Firebase.firestore.collection(CONSTANT.KEY_USER).document(message.senderId)
+                    .get().addOnSuccessListener { value ->
+                        imageReceiver.
+
+                    }
+            }
         }
     }
     private class NoteDiffCallBack : DiffUtil.ItemCallback<ChatMessage>(){
@@ -107,5 +119,9 @@ class ChatFragment : Fragment() {
                 arguments = args
             }
         }
+    }
+    private fun getImage(encodeImage : String) : Bitmap {
+        val bytes = Base64.decode(encodeImage, Base64.DEFAULT)
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
 }

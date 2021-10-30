@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.messapp.R
 import com.example.mymessagingapp.adapter.ConversationAdapter
 import com.example.mymessagingapp.data.User
 import com.example.mymessagingapp.modelview.ChatListViewModelFactory

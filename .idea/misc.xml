@@ -3,13 +3,18 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/unin2/AndroidStudioProjects/MessApp/app/src/main/res/layout/activity_main.xml" value="0.4" />
-        <entry key="..\:/Users/unin2/AndroidStudioProjects/MessApp/app/src/main/res/layout/login.xml" value="0.22146739130434784" />
-        <entry key="..\:/Users/unin2/AndroidStudioProjects/MessApp/app/src/main/res/layout/signin.xml" value="0.25" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/activity_main.xml" value="0.1796875" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/chat_list_conversation.xml" value="0.1796875" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/chat_list_fragment.xml" value="0.1796875" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/chat_message.xml" value="0.1796875" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/login.xml" value="0.1796875" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/received_message.xml" value="0.1796875" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/sent_message.xml" value="0.1796875" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/signup.xml" value="0.1796875" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

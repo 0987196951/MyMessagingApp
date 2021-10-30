@@ -24,5 +24,5 @@
         android:id="@+id/timeReceiveMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/time_receive_message"/>
+        android:text="@string/time_message"/>
 </LinearLayout>
