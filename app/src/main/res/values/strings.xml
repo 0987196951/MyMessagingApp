@@ -1,11 +1,3 @@
 <resources>
-    <string name="app_name">MyMessagingApp</string>
-    <string name="user_name">User Name</string>
-    <string name="gmail">gmail</string>
-    <string name="find_user_other">Find the other user by user name</string>
-    <string name="send_message">send</string>
-    <string name="sent_message">sent message</string>
-    <string name="received_message">received message</string>
-    <string name="time_send_message">time send message</string>
-    <string name="time_receive_message">time receive message</string>
+    <string name="app_name">MessApp</string>
 </resources>
