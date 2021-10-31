@@ -105,7 +105,6 @@ class ChatFragment : Fragment() {
             addNewMessage(s)
             addNewConversation(s)
         }
-
     }
     private inner class ChatHolder(view : View) : RecyclerView.ViewHolder(view) {
         private lateinit var message : ChatMessage

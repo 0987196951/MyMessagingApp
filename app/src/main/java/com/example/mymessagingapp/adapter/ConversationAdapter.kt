@@ -23,7 +23,7 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import java.util.*
 
-class ConversationAdapter(private var user: User, private var list: MutableList<Conversation>, var context: Context, var layoutInflater: LayoutInflater) :
+class  ConversationAdapter(private var user: User, private var list: MutableList<Conversation>, var context: Context, var layoutInflater: LayoutInflater) :
     RecyclerView.Adapter<ConversationAdapter.ConversationHolder>() {
     val db = Firebase.firestore
     private var callback : CallBackFromChatList

@@ -4,5 +4,8 @@
     <string name="received_message">received message</string>
     <string name="time_message">time message</string>
     <string name="sent_message">sent message</string>
+    <string name="user_name">User Name</string>
+    <string name="gmail">Gmail</string>
+    <string name="find_user_other">find other user to make messages</string>
 
 </resources>

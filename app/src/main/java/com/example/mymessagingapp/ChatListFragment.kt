@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -24,6 +25,7 @@ class ChatListFragment : Fragment(){
     private lateinit var recyclerListConversation: RecyclerView
     private lateinit var recyclerViewAdapter: ConversationAdapter
     private lateinit var user : User
+    private lateinit var findOtherUser : EditText
     private val factory : ChatListViewModelFactory by lazy {
         ChatListViewModelFactory(user, requireContext(), layoutInflater)
     }
@@ -44,6 +46,7 @@ class ChatListFragment : Fragment(){
         imageUser = view.findViewById(R.id.chatListImageUser) as ImageView
         nameUser = view.findViewById((R.id.chatListUserName)) as TextView
         gmailUser = view.findViewById(R.id.chatListUserGmail) as TextView
+        findOtherUser = view.findViewById(R.id.chatListFindOtherUser) as EditText
         recyclerListConversation = view.findViewById(R.id.recyclerListConversation) as RecyclerView
         recyclerListConversation.layoutManager = LinearLayoutManager(context)
         recyclerListConversation.adapter = recyclerViewAdapter
