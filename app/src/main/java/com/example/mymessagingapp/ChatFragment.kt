@@ -3,6 +3,8 @@ package com.example.mymessagingapp
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,14 +22,17 @@ import com.example.mymessagingapp.data.User
 import com.example.messapp.R
 import com.example.mymessagingapp.modelview.ChatListViewModelFactory
 import com.example.mymessagingapp.modelview.ChatViewModelFactory
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
+import java.util.*
 import java.util.concurrent.Executors
-
+private val TAG = "ChatFragmentListener"
 class ChatFragment : Fragment() {
     private lateinit var user : User
     private lateinit var group : Group
+    private lateinit var chat : ChatMessage
     private lateinit var nameReceiver : TextView
     private lateinit var imageReceiver : ImageView
     private lateinit var settingButton : ImageButton
@@ -74,6 +79,33 @@ class ChatFragment : Fragment() {
                     messageRecyclerView.adapter = adapter
                 }
             })
+    }
+
+    override fun onStart() {
+        super.onStart()
+        /*val sendPlace = object :TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onTextChanged(sequence: CharSequence, p1: Int, p2: Int, p3: Int) {
+                val s = sequence.toString()
+                addNewConversation(s)
+                addNewMessage(s)
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+                TODO("Not yet implemented")
+            }
+
+        }
+        sendingMessage.addTextChangedListener(sendPlace)*/
+        sendingMessageButton.setOnClickListener { v ->
+            val s = sendingMessage.text.toString()
+            addNewMessage(s)
+            addNewConversation(s)
+        }
+
     }
     private inner class ChatHolder(view : View) : RecyclerView.ViewHolder(view) {
         private lateinit var message : ChatMessage
@@ -147,5 +179,24 @@ class ChatFragment : Fragment() {
     private fun getImage(encodeImage : String) : Bitmap {
         val bytes = Base64.decode(encodeImage, Base64.DEFAULT)
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+    }
+    private fun addNewConversation(message : String){
+
+        var conversation = hashMapOf(
+            "groupId" to group.groupId.toString(),
+            "lastMessage" to message,
+            "timeLastMessage" to Date()
+        )
+        Firebase.firestore.collection(CONSTANT.KEY_CONVERSATION).document(group.groupId.toString()).set(conversation)
+
+    }
+    private fun addNewMessage(message : String ){
+        var message = hashMapOf(
+            "senderId" to user.userId,
+            "groupId" to group.groupId,
+            "message" to message,
+            "timeMessage" to Date()
+        )
+        Firebase.firestore.collection(CONSTANT.KEY_MESSAGE).add(message)
     }
 }
