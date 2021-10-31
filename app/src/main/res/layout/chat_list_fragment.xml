@@ -37,6 +37,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/find_user_other"/>
+    <Button
+        android:id="@+id/findOtherUserButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/find"/>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerListConversation"
         android:layout_width="match_parent"

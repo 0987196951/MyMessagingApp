@@ -7,5 +7,6 @@
     <string name="user_name">User Name</string>
     <string name="gmail">Gmail</string>
     <string name="find_user_other">find other user to make messages</string>
+    <string name="find">Find</string>
 
 </resources>
