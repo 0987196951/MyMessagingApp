@@ -8,5 +8,15 @@
     <string name="gmail">Gmail</string>
     <string name="find_user_other">find other user to make messages</string>
     <string name="find">Find</string>
+    <string name="welcome_back">welcome back</string>
+    <string name="login_to_continue">login to continue</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="log_in">Log in</string>
+    <string name="create_new_account">Create new account</string>
+    <string name="add_image">add image</string>
+    <string name="confirm_password">confirm password</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_in">Sign In</string>
 
 </resources>
