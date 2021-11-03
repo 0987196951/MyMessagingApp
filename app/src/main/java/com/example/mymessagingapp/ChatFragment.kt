@@ -32,7 +32,6 @@ private val TAG = "ChatFragmentListener"
 class ChatFragment : Fragment() {
     private lateinit var user : User
     private lateinit var group : Group
-    private lateinit var chat : ChatMessage
     private lateinit var nameReceiver : TextView
     private lateinit var imageReceiver : ImageView
     private lateinit var settingButton : ImageButton
@@ -112,11 +111,12 @@ class ChatFragment : Fragment() {
         private var contentMessage = view.findViewById(R.id.contentMessage) as TextView
         private var timeMessage = view.findViewById(R.id.timeMessage) as TextView
         fun bind(chat: ChatMessage, viewType : Int){
-            this.message = message
+            this.message = chat
             if(viewType == CONSTANT.VIEW_TYPE_RECEIVED_MESSAGE){
                 Firebase.firestore.collection(CONSTANT.KEY_USER).document(message.senderId)
                     .get().addOnSuccessListener { value ->
-                        imageMessage.setImageBitmap(getImage(value.toObject<User>()!!.image))
+                        val image = value.getString(CONSTANT.KEY_USER_IMAGE)
+                        imageMessage.setImageBitmap(image?.let { getImage(it) })
                     }.addOnFailureListener { e ->
                         Log.d("Chat Fragment", "" + e.printStackTrace())
                     }
@@ -128,7 +128,7 @@ class ChatFragment : Fragment() {
     }
     private class NoteDiffCallBack : DiffUtil.ItemCallback<ChatMessage>(){
         override fun areItemsTheSame(oldItem: ChatMessage, newItem: ChatMessage): Boolean {
-            return oldItem.groupId == newItem.groupId && oldItem.senderId == newItem.senderId && oldItem.timeMessage.equals(newItem.timeMessage)
+            return oldItem.senderId == newItem.senderId && oldItem.timeMessage.equals(newItem.timeMessage)
         }
 
         override fun areContentsTheSame(oldItem: ChatMessage, newItem: ChatMessage): Boolean {
@@ -162,7 +162,6 @@ class ChatFragment : Fragment() {
                 return CONSTANT.VIEW_TYPE_RECEIVED_MESSAGE
             }
         }
-
     }
     companion object {
         fun newInstance(user: User, group: Group) : ChatFragment{
@@ -180,22 +179,21 @@ class ChatFragment : Fragment() {
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
     private fun addNewConversation(message : String){
-
-        var conversation = hashMapOf(
-            "groupId" to group.groupId.toString(),
-            "lastMessage" to message,
-            "timeLastMessage" to Date()
+        Firebase.firestore.collection(CONSTANT.KEY_GROUP).document(group.groupId).update(
+            mapOf(
+                "conversation.senderId" to user.userId,
+                "conversation.content" to message,
+                "conversation.timeSend" to Date()
+            )
         )
-        Firebase.firestore.collection(CONSTANT.KEY_CONVERSATION).document(group.groupId.toString()).set(conversation)
 
     }
     private fun addNewMessage(message : String ){
-        var message = hashMapOf(
+        var messageMap = hashMapOf(
             "senderId" to user.userId,
-            "groupId" to group.groupId,
             "message" to message,
             "timeMessage" to Date()
         )
-        Firebase.firestore.collection(CONSTANT.KEY_MESSAGE).add(message)
+        Firebase.firestore.collection(CONSTANT.KEY_GROUP).document(user.userId).collection(CONSTANT.KEY_MESSAGE).add(messageMap)
     }
 }

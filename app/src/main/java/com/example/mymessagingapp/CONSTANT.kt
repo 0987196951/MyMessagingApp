@@ -15,6 +15,9 @@ class CONSTANT {
         const val KEY_MESSAGE = "message"
         const val VIEW_TYPE_SEND_MESSAGE = 0
         const val VIEW_TYPE_RECEIVED_MESSAGE = 1
+        const val KEY_FIND_OTHER_USER = "findOtherUser"
+        const val KEY_LIST_GROUP = "listGroup"
+        const val KEY_USER_ID = "userId"
     }
 
 }

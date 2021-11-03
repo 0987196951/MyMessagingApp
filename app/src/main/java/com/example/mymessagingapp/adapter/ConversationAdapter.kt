@@ -23,7 +23,7 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import java.util.*
 
-class  ConversationAdapter(private var user: User, private var list: MutableList<Conversation>, var context: Context, var layoutInflater: LayoutInflater) :
+class  ConversationAdapter(private var user: User, private var list: List<Conversation>, var context: Context, var layoutInflater: LayoutInflater) :
     RecyclerView.Adapter<ConversationAdapter.ConversationHolder>() {
     val db = Firebase.firestore
     private var callback : CallBackFromChatList
@@ -44,20 +44,7 @@ class  ConversationAdapter(private var user: User, private var list: MutableList
             itemView.setOnClickListener(this)
         }
         fun bind(conversation : Conversation){
-            this.conversation = conversation
-            db.collection(CONSTANT.KEY_GROUP).document(conversation.groupId)
-                .get()
-                .addOnSuccessListener { document ->
-                    if(document != null ){
-                        this.group = document.toObject<Group>()!!
-                        chatListImageGroup.setImageBitmap(getGroupImage(group.imageGroup))
-                        chatListNameGroup.text = group.nameGroup
-                        chatListLastMessage.text = conversation.lastMessage
-                    }
-                }
-                .addOnFailureListener { e ->
-                    Log.d("Conversation", "can't display Group")
-                }
+
         }
         private fun getGroupImage(encodeImage : String) : Bitmap{
             val bytes = Base64.decode(encodeImage, Base64.DEFAULT)

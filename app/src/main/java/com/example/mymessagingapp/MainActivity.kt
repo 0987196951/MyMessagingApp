@@ -2,14 +2,16 @@ package com.example.mymessagingapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.messapp.R
 import com.example.mymessagingapp.data.Group
 import com.example.mymessagingapp.data.User
 import com.example.mymessagingapp.interfaces.CallBackFromChatList
+import com.example.mymessagingapp.interfaces.CallBackFromListUserFound
 import java.util.*
 
-class MainActivity : AppCompatActivity(), CallBackFromChatList{
-    private var user : User = User("tien", "dmcsnccc@gmail.com", "asdadad", "fnionsdfoisnfoisdf")
-    override fun onCreate(savedInstanceState: Bundle?) {
+class MainActivity : AppCompatActivity(), CallBackFromChatList, CallBackFromListUserFound{
+    private var user : User = User("123","tien", "dmcsnccc@gmail.com", "asdadad", "fnionsdfoisnfoisdf")
+    override fun onCreate(savedInstanceState: Bundle?) {70
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val currentFragment =supportFragmentManager.findFragmentById(R.id.fragment_container)
@@ -24,5 +26,9 @@ class MainActivity : AppCompatActivity(), CallBackFromChatList{
     override fun onGroupSelected(user : User, group : Group){
         val chatFragment = ChatFragment.newInstance(user, group)
         supportFragmentManager.beginTransaction().add(R.id.fragment_container, chatFragment).commit()
+    }
+
+    override fun onUserFound(user: User) {
+
     }
 }

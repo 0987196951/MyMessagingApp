@@ -2,26 +2,31 @@ package com.example.mymessagingapp
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.messapp.R
 import com.example.mymessagingapp.adapter.ConversationAdapter
 import com.example.mymessagingapp.data.User
+import com.example.mymessagingapp.interfaces.CallBackFromListUserFound
 import com.example.mymessagingapp.modelview.ChatListViewModelFactory
 import java.security.Provider
-
-class ChatListFragment : Fragment(){
+private val TAG = "ChatListFragment"
+class ChatListFragment : Fragment(), CallBackFromListUserFound{
     private lateinit var imageUser : ImageView
     private lateinit var nameUser : TextView
     private lateinit var gmailUser : TextView
+    private lateinit var findOtherUserButton : Button
     private lateinit var recyclerListConversation: RecyclerView
     private lateinit var recyclerViewAdapter: ConversationAdapter
     private lateinit var user : User
@@ -35,7 +40,7 @@ class ChatListFragment : Fragment(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         user = arguments?.getSerializable(CONSTANT.KEY_USER) as User
-        recyclerViewAdapter = factory.conversationAdapter
+        recyclerViewAdapter = factory.conversationAdapter.value!!
     }
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,6 +51,7 @@ class ChatListFragment : Fragment(){
         imageUser = view.findViewById(R.id.chatListImageUser) as ImageView
         nameUser = view.findViewById((R.id.chatListUserName)) as TextView
         gmailUser = view.findViewById(R.id.chatListUserGmail) as TextView
+        findOtherUserButton = view.findViewById(R.id.findOtherUserButton) as Button
         findOtherUser = view.findViewById(R.id.chatListFindOtherUser) as EditText
         recyclerListConversation = view.findViewById(R.id.recyclerListConversation) as RecyclerView
         recyclerListConversation.layoutManager = LinearLayoutManager(context)
@@ -55,7 +61,25 @@ class ChatListFragment : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        factory.conversationAdapter.observe(
+            viewLifecycleOwner,
+            Observer { conversationAdapter ->
+                conversationAdapter?.let {
+                    Log.d(TAG, "made conversation adapter")
+                    updateUI(conversationAdapter)
+                }
+            }
+        )
+    }
+    private fun updateUI(conversationAdapter: ConversationAdapter){
+        recyclerListConversation.adapter = conversationAdapter
+    }
+    override fun onStart() {
+        super.onStart()
+        findOtherUserButton.setOnClickListener {
+            val s = findOtherUser.text.toString()
 
+        }
     }
     companion object {
         fun newInstance(user : User): ChatListFragment {
@@ -68,4 +92,11 @@ class ChatListFragment : Fragment(){
         }
     }
 
+    override fun onUserFound(userFound: User) {
+        (requireActivity() as CallBackFromListUserFound).onUserFound(userFound)
+
+    }
+    private checkGroupIsExist(userFound : User){
+
+    }
 }

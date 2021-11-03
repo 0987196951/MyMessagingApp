@@ -37,7 +37,7 @@ class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvide
     }
     private fun listenerChatMessageChange(){
         val db = Firebase.firestore
-        db.collection(CONSTANT.KEY_MESSAGE)
+        db.collection(CONSTANT.KEY_GROUP)
             .whereEqualTo(CONSTANT.KEY_GROUP, group.groupId.toString())
             .addSnapshotListener( EventListener<QuerySnapshot> { value, e ->
                 if(e != null) {
