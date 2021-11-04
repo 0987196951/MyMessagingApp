@@ -7,10 +7,13 @@ import com.example.mymessagingapp.data.Group
 import com.example.mymessagingapp.data.User
 import com.example.mymessagingapp.interfaces.CallBackFromChatList
 import com.example.mymessagingapp.interfaces.CallBackFromListUserFound
+import com.example.mymessagingapp.interfaces.CallBackWhenGroupExisted
 import java.util.*
 
-class MainActivity : AppCompatActivity(), CallBackFromChatList, CallBackFromListUserFound{
-    private var user : User = User("123","tien", "dmcsnccc@gmail.com", "asdadad", "fnionsdfoisnfoisdf")
+class MainActivity : AppCompatActivity(), CallBackFromChatList, CallBackFromListUserFound, CallBackWhenGroupExisted{
+    private var user : User = User("123","tien", "123456789", "dmcsncc19@gmail.com"
+        , Date(),Date(),CONSTANT.IMAGE_DEFAULT, false,
+        emptyList(), emptyList())
     override fun onCreate(savedInstanceState: Bundle?) {70
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -28,7 +31,14 @@ class MainActivity : AppCompatActivity(), CallBackFromChatList, CallBackFromList
         supportFragmentManager.beginTransaction().add(R.id.fragment_container, chatFragment).commit()
     }
 
-    override fun onUserFound(user: User) {
+    override fun onUserFound(userFound: User) {
+        val group = Group(UUID.randomUUID().toString(), userFound.name, Date(), listOf(user.userId, userFound.userId), false, CONSTANT.IMAGE_DEFAULT)
+        val chatFragment = ChatFragment.newInstance(user, group)
+        supportFragmentManager.beginTransaction().add(R.id.fragment_container, chatFragment).commit()
+    }
 
+    override fun onGroupExist( group: Group) {
+        val chatFragment = ChatFragment.newInstance(user, group)
+        supportFragmentManager.beginTransaction().add(R.id.fragment_container, chatFragment).commit()
     }
 }

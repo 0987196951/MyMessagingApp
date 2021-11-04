@@ -5,6 +5,7 @@ import java.util.*
 
 data class User(val userId : String,
                 var name : String,
+                var password : String,
                 val gmail : String,
                 val dateOfBirth : Date,
                 val accountCreate : Date,

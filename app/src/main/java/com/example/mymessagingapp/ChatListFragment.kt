@@ -12,20 +12,25 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.messapp.R
 import com.example.mymessagingapp.adapter.ConversationAdapter
+import com.example.mymessagingapp.data.Group
 import com.example.mymessagingapp.data.User
 import com.example.mymessagingapp.interfaces.CallBackFromListUserFound
+import com.example.mymessagingapp.interfaces.CallBackWhenGroupExisted
 import com.example.mymessagingapp.modelview.ChatListViewModelFactory
-import java.security.Provider
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import java.util.*
+
 private val TAG = "ChatListFragment"
 class ChatListFragment : Fragment(), CallBackFromListUserFound{
     private lateinit var imageUser : ImageView
     private lateinit var nameUser : TextView
     private lateinit var gmailUser : TextView
+    private lateinit var addGroup: Button
     private lateinit var findOtherUserButton : Button
     private lateinit var recyclerListConversation: RecyclerView
     private lateinit var recyclerViewAdapter: ConversationAdapter
@@ -51,6 +56,7 @@ class ChatListFragment : Fragment(), CallBackFromListUserFound{
         imageUser = view.findViewById(R.id.chatListImageUser) as ImageView
         nameUser = view.findViewById((R.id.chatListUserName)) as TextView
         gmailUser = view.findViewById(R.id.chatListUserGmail) as TextView
+        addGroup = view.findViewById(R.id.addGroup) as Button
         findOtherUserButton = view.findViewById(R.id.findOtherUserButton) as Button
         findOtherUser = view.findViewById(R.id.chatListFindOtherUser) as EditText
         recyclerListConversation = view.findViewById(R.id.recyclerListConversation) as RecyclerView
@@ -93,10 +99,41 @@ class ChatListFragment : Fragment(), CallBackFromListUserFound{
     }
 
     override fun onUserFound(userFound: User) {
-        (requireActivity() as CallBackFromListUserFound).onUserFound(userFound)
-
+        var s = checkGroupIsExist(userFound)
+        if(s == null)
+            (requireActivity() as CallBackFromListUserFound).onUserFound(userFound)
+        else {
+            Firebase.firestore.collection(CONSTANT.KEY_GROUP).document(s).get()
+                .addOnSuccessListener { value ->
+                    (requireActivity() as CallBackWhenGroupExisted).onGroupExist(
+                        Group(s,
+                            value.data?.get("nameGroup") as String,
+                            value.data!!["createdGroup"] as Date,
+                            value.data!!["member_list_id"] as List<String>,
+                            value.data!!["isGroup"] as Boolean,
+                            value.data!!["imageGroup"] as String
+                        )
+                    )
+                }
+        }
     }
-    private checkGroupIsExist(userFound : User){
-
+    private fun checkGroupIsExist(userFound : User) : String? {
+        var listGroupId : List<String> = emptyList()
+        Firebase.firestore.collection(CONSTANT.KEY_USER).document(user.userId).get()
+            .addOnSuccessListener { value ->
+                listGroupId = value.data?.get(CONSTANT.KEY_GROUP_ID) as List<String>
+            }
+        var groupIdCanFind : String? = null
+        Firebase.firestore.collection(CONSTANT.KEY_GROUP)
+            .whereEqualTo("isGroup", true)
+            .whereIn(CONSTANT.KEY_GROUP_ID, listGroupId)
+            .get().addOnSuccessListener { value ->
+                    if(value != null) {
+                        for(doc in value){
+                            groupIdCanFind = doc.data.get("groupId") as String
+                        }
+                    }
+            }
+        return groupIdCanFind
     }
 }

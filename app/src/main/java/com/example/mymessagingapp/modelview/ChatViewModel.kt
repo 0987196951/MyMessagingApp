@@ -22,7 +22,7 @@ class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvide
     lateinit var listMessage : LiveData<List<ChatMessage>>
     init {
         db.collection(CONSTANT.KEY_MESSAGE)
-            .whereEqualTo("groupId" , group.groupId)
+            .document(group.groupId).collection(CONSTANT.KEY_MESSAGE)
             .get().addOnSuccessListener { value ->
                 for(doc in value){
                     listMessage.value?.plus(doc.toObject<ChatMessage>())
@@ -37,8 +37,8 @@ class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvide
     }
     private fun listenerChatMessageChange(){
         val db = Firebase.firestore
-        db.collection(CONSTANT.KEY_GROUP)
-            .whereEqualTo(CONSTANT.KEY_GROUP, group.groupId.toString())
+        db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
+            .collection(CONSTANT.KEY_MESSAGE)
             .addSnapshotListener( EventListener<QuerySnapshot> { value, e ->
                 if(e != null) {
                     return@EventListener
@@ -47,24 +47,15 @@ class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvide
                     for(doc in value.documentChanges){
                         if(doc.type == DocumentChange.Type.ADDED){
                             val senderId = doc.document.getString("senderId")
-                            val groupId = doc.document.getString("groupId")
                             val message = doc.document.getString("message")
                             val timeMessage = doc.document.getDate("timeMessage")
-                            listMessage.value?.plus(ChatMessage(senderId!!, groupId!!, message!!, timeMessage!!))
-                            if(listMessage.value?.size == 0 ){
-                                val hashConversation = hashMapOf(
-                                    "groupId" to group.groupId,
-                                    "lastMessage" to message,
-                                    "timeLastMessage" to timeMessage
-                                )
-                                db.collection(CONSTANT.KEY_CONVERSATION).add(hashConversation)
-                            }
-                            else {
-                                val docRef = db.collection(CONSTANT.KEY_CONVERSATION)
-                                    .document(group.groupId.toString())
-                                docRef.update("lastMessage" , message)
-                                docRef.update("timeLastMessage", timeMessage)
-                            }
+                            listMessage.value?.plus(ChatMessage(senderId!!, message!!, timeMessage!!))
+                                db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
+                                    .update(mapOf(
+                                        "conversation.senderId" to senderId,
+                                        "conversation.message" to message,
+                                        "conversation.timeMessage" to timeMessage
+                                    ))
                         }
                     }
                 }

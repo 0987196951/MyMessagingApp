@@ -120,10 +120,13 @@ class ChatFragment : Fragment() {
                     }.addOnFailureListener { e ->
                         Log.d("Chat Fragment", "" + e.printStackTrace())
                     }
+
             }
             else {
                   imageMessage.setImageBitmap(getImage(user.image))
             }
+            contentMessage.text = message.message
+            timeMessage.text = message.timeMessage.toString()
         }
     }
     private class NoteDiffCallBack : DiffUtil.ItemCallback<ChatMessage>(){
@@ -186,7 +189,6 @@ class ChatFragment : Fragment() {
                 "conversation.timeSend" to Date()
             )
         )
-
     }
     private fun addNewMessage(message : String ){
         var messageMap = hashMapOf(
