@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MessApp</string>
+    <string name="app_name">MessagingApp</string>
     <string name="send">send</string>
     <string name="received_message">received message</string>
     <string name="time_message">time message</string>
@@ -9,5 +9,20 @@
     <string name="find_user_other">find other user to make messages</string>
     <string name="find">Find</string>
     <string name="add_group">add group</string>
+    <string name="enter_name_of_group">Enter name of group</string>
+    <string name="accept">accept</string>
+    <string name="exit">exit</string>
+    <string name="email">email</string>
+    <string name="login_to_continue">Login to continue</string>
+    <string name="welcome_back">welcome back</string>
+    <string name="sign_in">sign_in</string>
+    <string name="create_new_account">create_new_account</string>
+    <string name="password">password</string>
+    <string name="add_image">add image</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="sign_up">sign up</string>
+    <string name="cant_find_other_users">Can\'t find other user</string>
+    <string name="user_found">User found</string>
+    <string name="name_group">name group</string>
 
 </resources>

@@ -13,7 +13,7 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.messapp.R
+import com.example.mymessagingapp.R
 import com.example.mymessagingapp.CONSTANT
 import com.example.mymessagingapp.data.User
 import com.example.mymessagingapp.interfaces.CallBackFromListUserFound

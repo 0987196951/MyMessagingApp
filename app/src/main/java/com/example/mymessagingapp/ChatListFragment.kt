@@ -14,19 +14,22 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.messapp.R
 import com.example.mymessagingapp.adapter.ConversationAdapter
 import com.example.mymessagingapp.data.Group
 import com.example.mymessagingapp.data.User
+import com.example.mymessagingapp.dialog.MakeGroupDialog
+import com.example.mymessagingapp.interfaces.CallBackFromChatList
 import com.example.mymessagingapp.interfaces.CallBackFromListUserFound
+import com.example.mymessagingapp.interfaces.CallBackFromMakeGroup
 import com.example.mymessagingapp.interfaces.CallBackWhenGroupExisted
 import com.example.mymessagingapp.modelview.ChatListViewModelFactory
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.*
-
+private val DIALOG_MAKE_GROUP = "Make New Group"
+private val REQUEST_MAKE_GROUP = 1
 private val TAG = "ChatListFragment"
-class ChatListFragment : Fragment(), CallBackFromListUserFound{
+class ChatListFragment : Fragment(), CallBackFromListUserFound, CallBackFromMakeGroup, CallBackFromChatList{
     private lateinit var imageUser : ImageView
     private lateinit var nameUser : TextView
     private lateinit var gmailUser : TextView
@@ -67,21 +70,30 @@ class ChatListFragment : Fragment(), CallBackFromListUserFound{
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        factory.conversationAdapter.observe(
-            viewLifecycleOwner,
-            Observer { conversationAdapter ->
-                conversationAdapter?.let {
-                    Log.d(TAG, "made conversation adapter")
-                    updateUI(conversationAdapter)
+        nameUser.text = user.name
+        gmailUser.text = user.gmail
+        addGroup.setOnClickListener{
+            MakeGroupDialog.newInstance(user).apply {
+                setTargetFragment(this@ChatListFragment, REQUEST_MAKE_GROUP ).apply {
+                    show(this@ChatListFragment.requireFragmentManager(), DIALOG_MAKE_GROUP)
                 }
             }
-        )
+        }
     }
     private fun updateUI(conversationAdapter: ConversationAdapter){
         recyclerListConversation.adapter = conversationAdapter
     }
     override fun onStart() {
         super.onStart()
+        factory.conversationAdapter.observe(
+            viewLifecycleOwner,
+            Observer { conversationAdapter ->
+                conversationAdapter?.let {
+                    Log.d(TAG, "made conversation adapter")
+                    updateUI(it)
+                }
+            }
+        )
         findOtherUserButton.setOnClickListener {
             val s = findOtherUser.text.toString()
 
@@ -109,13 +121,15 @@ class ChatListFragment : Fragment(), CallBackFromListUserFound{
                         Group(s,
                             value.data?.get("nameGroup") as String,
                             value.data!!["createdGroup"] as Date,
-                            value.data!!["member_list_id"] as List<String>,
                             value.data!!["isGroup"] as Boolean,
                             value.data!!["imageGroup"] as String
                         )
                     )
                 }
         }
+    }
+    override fun onMadeGroup(groupMade: Group) {
+        (requireActivity() as CallBackFromMakeGroup).onMadeGroup(groupMade)
     }
     private fun checkGroupIsExist(userFound : User) : String? {
         var listGroupId : List<String> = emptyList()
@@ -136,4 +150,9 @@ class ChatListFragment : Fragment(), CallBackFromListUserFound{
             }
         return groupIdCanFind
     }
+
+    override fun onGroupSelected(groupId: String) {
+        (context as CallBackFromChatList).onGroupSelected(groupId)
+    }
+
 }

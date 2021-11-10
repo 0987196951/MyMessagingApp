@@ -13,6 +13,6 @@
         android:id="@+id/canNotOtherUser"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/can_t_find_other_users"/>
+        android:text="@string/cant_find_other_users"/>
 
 </LinearLayout>

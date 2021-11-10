@@ -9,7 +9,7 @@ class SortedListConversationAdapter(adapter: ConversationAdapter) : SortedListAd
     }
 
     override fun areContentsTheSame(oldItem: Conversation?, newItem: Conversation?): Boolean {
-        return oldItem?.senderId.equals(newItem?.senderId) && oldItem!!.timeSend.equals(newItem!!.timeSend)
+        return oldItem?.senderName.equals(newItem?.senderName) && oldItem!!.timeSend.equals(newItem!!.timeSend)
     }
 
     override fun areItemsTheSame(item1: Conversation?, item2: Conversation?): Boolean {

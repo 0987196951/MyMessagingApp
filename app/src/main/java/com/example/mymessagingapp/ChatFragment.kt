@@ -3,8 +3,6 @@ package com.example.mymessagingapp
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,25 +11,20 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.*
 import androidx.recyclerview.widget.ListAdapter
 import com.example.mymessagingapp.data.ChatMessage
 import com.example.mymessagingapp.data.Group
 import com.example.mymessagingapp.data.User
-import com.example.messapp.R
-import com.example.mymessagingapp.modelview.ChatListViewModelFactory
 import com.example.mymessagingapp.modelview.ChatViewModelFactory
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import java.util.*
 import java.util.concurrent.Executors
 private val TAG = "ChatFragmentListener"
 class ChatFragment : Fragment() {
     private lateinit var user : User
-    private lateinit var group : Group
+    private lateinit var group : Group 
     private lateinit var nameReceiver : TextView
     private lateinit var imageReceiver : ImageView
     private lateinit var settingButton : ImageButton
@@ -58,10 +51,9 @@ class ChatFragment : Fragment() {
         settingButton = view.findViewById(R.id.settingChatMessage) as ImageButton
         messageRecyclerView = view.findViewById(R.id.chatListRecyclerView) as RecyclerView
         var linearLayoutManager = LinearLayoutManager(context)
-        linearLayoutManager.reverseLayout = true
+        linearLayoutManager.reverseLayout = false
         linearLayoutManager.stackFromEnd = true
         messageRecyclerView.layoutManager = linearLayoutManager
-        messageRecyclerView.adapter = adapter
         sendingMessage = view.findViewById(R.id.sendMessage) as EditText
         sendingMessageButton = view.findViewById(R.id.sendMessageButton) as Button
         return view
@@ -69,6 +61,9 @@ class ChatFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        nameReceiver.text = group.nameGroup
+        //imageReceiver.setImageBitmap(getImage(group.imageGroup))
+        adapter = chatViewModel.listMessage.value?.let { ChatRecyclerAdapter(it) }!!
         chatViewModel.listMessage.observe(
             viewLifecycleOwner,
             Observer { messes ->
@@ -115,15 +110,15 @@ class ChatFragment : Fragment() {
             if(viewType == CONSTANT.VIEW_TYPE_RECEIVED_MESSAGE){
                 Firebase.firestore.collection(CONSTANT.KEY_USER).document(message.senderId)
                     .get().addOnSuccessListener { value ->
-                        val image = value.getString(CONSTANT.KEY_USER_IMAGE)
-                        imageMessage.setImageBitmap(image?.let { getImage(it) })
+                        //val image = value.getString(CONSTANT.KEY_USER_IMAGE)
+                        //imageMessage.setImageBitmap(image?.let { getImage(it) })
                     }.addOnFailureListener { e ->
                         Log.d("Chat Fragment", "" + e.printStackTrace())
                     }
 
             }
             else {
-                  imageMessage.setImageBitmap(getImage(user.image))
+                  //imageMessage.setImageBitmap(getImage(user.image))
             }
             contentMessage.text = message.message
             timeMessage.text = message.timeMessage.toString()
@@ -158,13 +153,14 @@ class ChatFragment : Fragment() {
         }
 
         override fun getItemViewType(position: Int): Int {
-            if(user.userId == chatMessages[position].senderId){
+            if(user.userId.equals(chatMessages[position].senderId)){
                 return CONSTANT.VIEW_TYPE_SEND_MESSAGE
             }
             else {
                 return CONSTANT.VIEW_TYPE_RECEIVED_MESSAGE
             }
         }
+
     }
     companion object {
         fun newInstance(user: User, group: Group) : ChatFragment{
@@ -182,20 +178,20 @@ class ChatFragment : Fragment() {
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
     private fun addNewConversation(message : String){
-        Firebase.firestore.collection(CONSTANT.KEY_GROUP).document(group.groupId).update(
-            mapOf(
-                "conversation.senderId" to user.userId,
-                "conversation.content" to message,
-                "conversation.timeSend" to Date()
-            )
+        Firebase.firestore.collection(CONSTANT.KEY_GROUP).document(group.groupId).update(mapOf(
+            CONSTANT.KEY_CONVERSATION to mapOf(
+                CONSTANT.KEY_CONVERSATION_SENDER_NAME to user.name,
+                CONSTANT.KEY_CONVERSATION_CONTENT to message,
+                CONSTANT.KEY_CONVERSATION_TIME_SEND to Date()
+            ))
         )
     }
     private fun addNewMessage(message : String ){
         var messageMap = hashMapOf(
-            "senderId" to user.userId,
-            "message" to message,
-            "timeMessage" to Date()
+            CONSTANT.KEY_MESSAGE_SENDER_ID to user.userId,
+            CONSTANT.KEY_MESSAGE_CONTENT to message,
+            CONSTANT.KEY_MESSAGE_TIME_SEND to Date()
         )
-        Firebase.firestore.collection(CONSTANT.KEY_GROUP).document(user.userId).collection(CONSTANT.KEY_MESSAGE).add(messageMap)
+        Firebase.firestore.collection(CONSTANT.KEY_GROUP).document(group.groupId).collection(CONSTANT.KEY_MESSAGE).add(messageMap)
     }
 }

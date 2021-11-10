@@ -5,13 +5,15 @@
       <map>
         <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/activity_main.xml" value="0.1796875" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/activity_sign_in.xml" value="0.1796875" />
-        <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/activity_sign_up.xml" value="0.5" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/activity_sign_up.xml" value="0.2846580406654344" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/chat_list_conversation.xml" value="0.1796875" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/chat_list_fragment.xml" value="0.1796875" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/chat_message.xml" value="0.1796875" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/find_other_user.xml" value="0.1796875" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/finded_useres.xml" value="0.1796875" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/found_users.xml" value="0.1" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/login.xml" value="0.1796875" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/make_group_dialog.xml" value="0.22" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/received_message.xml" value="0.1796875" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/sent_message.xml" value="0.1796875" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/MyMessagingApp/app/src/main/res/layout/signup.xml" value="0.1796875" />

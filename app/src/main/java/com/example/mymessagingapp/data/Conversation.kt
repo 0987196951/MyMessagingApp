@@ -2,7 +2,7 @@ package com.example.mymessagingapp.data
 
 import java.util.*
 
-data class Conversation(var senderId : String, var content : String, var timeSend : Date) : Comparable<Conversation> {
+data class Conversation(var senderName : String, var content : String, var timeSend : Date, var groupId : String, var groupName : String) : Comparable<Conversation> {
     override fun compareTo(other: Conversation): Int {
         return timeSend.compareTo(other.timeSend)
     }

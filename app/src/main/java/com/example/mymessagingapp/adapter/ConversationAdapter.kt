@@ -12,8 +12,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
-import com.example.messapp.R
 import com.example.mymessagingapp.CONSTANT
+import com.example.mymessagingapp.R
 import com.example.mymessagingapp.data.Conversation
 import com.example.mymessagingapp.data.Group
 import com.example.mymessagingapp.data.User
@@ -36,7 +36,6 @@ class  ConversationAdapter(private var user: User, private var list: List<Conver
     inner class ConversationHolder(view : View)
         : RecyclerView.ViewHolder(view), View.OnClickListener {
         private lateinit var conversation: Conversation
-        private lateinit var group : Group
         private val chatListImageGroup = itemView.findViewById(R.id.chatListImageGroup) as ImageView
         private val chatListNameGroup = itemView.findViewById(R.id.chatListNameGroup) as TextView
         private val chatListLastMessage = itemView.findViewById(R.id.chatListLastMessage) as TextView
@@ -44,7 +43,9 @@ class  ConversationAdapter(private var user: User, private var list: List<Conver
             itemView.setOnClickListener(this)
         }
         fun bind(conversation : Conversation){
-
+            this.conversation = conversation
+            chatListLastMessage.text = conversation.senderName + " : " + conversation.content
+            chatListNameGroup.text = conversation.groupName
         }
         private fun getGroupImage(encodeImage : String) : Bitmap{
             val bytes = Base64.decode(encodeImage, Base64.DEFAULT)
@@ -52,7 +53,7 @@ class  ConversationAdapter(private var user: User, private var list: List<Conver
         }
 
         override fun onClick(view : View?) {
-            callback?.onGroupSelected(user, group)
+            callback.onGroupSelected(conversation.groupId)
         }
     }
     fun addConversation(con : Conversation){
