@@ -13,6 +13,7 @@ import com.example.mymessagingapp.utilities.Inites
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.EventListener
+import com.google.firebase.firestore.MetadataChanges
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
@@ -22,21 +23,21 @@ import java.util.*
 private val TAG = "ChatViewModel"
 class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvider.Factory{
     private val db = Firebase.firestore
+    private var check : Boolean = false
     var listMessage : MutableLiveData<MutableList<ChatMessage>> = MutableLiveData(mutableListOf<ChatMessage>())
     init {
-        db.collection(CONSTANT.KEY_GROUP)
+        /*db.collection(CONSTANT.KEY_GROUP)
             .document(group.groupId).collection(CONSTANT.KEY_MESSAGE)
-            .get().addOnSuccessListener { value ->
+            .get().addOnSuccessListener {  value ->
                 for(doc in value){
                     val senderId = doc.data.get(CONSTANT.KEY_MESSAGE_SENDER_ID) as String
                     val message = doc.data.get(CONSTANT.KEY_MESSAGE_CONTENT) as String
                     val timeMessage = Inites.convertTimeStampToDate(doc.data[CONSTANT.KEY_MESSAGE_TIME_SEND] as Timestamp)
-                    listMessage.value?.plus(ChatMessage(senderId, message, timeMessage))
+                    listMessage.value?.add(ChatMessage(senderId, message, timeMessage))
                 }
-                //listMessage.notifyObserver()
-            }.continueWith {
-                listenerChatMessageChange()
-            }
+                listMessage.notifyObserver()
+            }*/
+        listenerChatMessageChange()
     }
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return modelClass.getConstructor(User::class.java, Group::class.java).newInstance(user, group)
@@ -45,31 +46,36 @@ class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvide
         val db = Firebase.firestore
         db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
             .collection(CONSTANT.KEY_MESSAGE)
-            .addSnapshotListener( EventListener<QuerySnapshot> { value, e ->
+            .addSnapshotListener(MetadataChanges.INCLUDE) { value, e ->
                 if(e != null) {
-                    return@EventListener
+                    return@addSnapshotListener
                 }
-                if(value != null){
+                if(value != null ){
                     for(doc in value.documentChanges){
                         if(doc.type == DocumentChange.Type.ADDED){
+                            Log.d(TAG, "change message")
                             val senderId = doc.document.getString(CONSTANT.KEY_MESSAGE_SENDER_ID) as String
                             val message = doc.document.getString(CONSTANT.KEY_MESSAGE_CONTENT) as String
                             val timeMessage = Inites.convertTimeStampToDate(doc.document[CONSTANT.KEY_MESSAGE_TIME_SEND] as Timestamp)
                             listMessage.value?.add(ChatMessage(senderId, message, timeMessage)).let {
                                 listMessage.notifyObserver()
                             }
-                                db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
-                                    .update(mapOf(
-                                         CONSTANT.KEY_CONVERSATION to mapOf(
-                                             CONSTANT.KEY_CONVERSATION_SENDER_NAME to senderId,
-                                             CONSTANT.KEY_CONVERSATION_CONTENT to message,
-                                             CONSTANT.KEY_CONVERSATION_TIME_SEND to timeMessage
-                                         )
-                                    ))
+                            if(check == false) {
+                                continue
+                            };
+                            db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
+                                .update(mapOf(
+                                    CONSTANT.KEY_CONVERSATION to mapOf(
+                                        CONSTANT.KEY_CONVERSATION_SENDER_NAME to senderId,
+                                        CONSTANT.KEY_CONVERSATION_CONTENT to message,
+                                        CONSTANT.KEY_CONVERSATION_TIME_SEND to timeMessage
+                                    )
+                                ))
                         }
                     }
+                    check = true
                 }
-            })
+            }
     }
     fun <T> MutableLiveData<T>.notifyObserver() {
         this.value = this.value

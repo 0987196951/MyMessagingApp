@@ -13,4 +13,8 @@ data class User(
     var image: String,
     var isActive: Boolean
 ) : Serializable{
+    override fun equals(other: Any?): Boolean {
+        var u : User = other as User
+        return userId == other.userId
+    }
 }

@@ -89,7 +89,7 @@ class ChatListFragment : Fragment(), CallBackFromListUserFound, CallBackFromMake
             viewLifecycleOwner,
             Observer { conversationAdapter ->
                 conversationAdapter?.let {
-                    Log.d(TAG, "made conversation adapter")
+                    Log.d(TAG, "size of list conversation is ${conversationAdapter.itemCount}")
                     updateUI(it)
                 }
             }

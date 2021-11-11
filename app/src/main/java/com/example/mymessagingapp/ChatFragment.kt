@@ -97,7 +97,6 @@ class ChatFragment : Fragment() {
         sendingMessageButton.setOnClickListener { v ->
             val s = sendingMessage.text.toString()
             addNewMessage(s)
-            addNewConversation(s)
         }
     }
     private inner class ChatHolder(view : View) : RecyclerView.ViewHolder(view) {

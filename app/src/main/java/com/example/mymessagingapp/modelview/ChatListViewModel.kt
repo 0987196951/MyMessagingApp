@@ -12,7 +12,9 @@ import com.example.mymessagingapp.data.Conversation
 import com.example.mymessagingapp.data.User
 import com.example.mymessagingapp.utilities.Inites
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.*
@@ -21,69 +23,60 @@ class ChatListViewModelFactory(val user : User,
                                private val context: Context,
                                private val layoutInflater: LayoutInflater  ) : ViewModelProvider.Factory {
     private val db = Firebase.firestore
+    val conversationAdapter : MutableLiveData<ConversationAdapter>
+        = MutableLiveData(ConversationAdapter(user,getConversationAndAddSnapShot(), context, layoutInflater))
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return modelClass.getConstructor(User::class.java, Context::class.java, LayoutInflater::class.java)
             .newInstance(user, context, layoutInflater)
     }
-    val conversationAdapter : MutableLiveData<ConversationAdapter>
-        = MutableLiveData(ConversationAdapter(user,getConversationAndAddSnapShot(), context, layoutInflater))
     private fun getConversationAndAddSnapShot() :MutableList<Conversation>{
-        var listGroupId : List<String> = emptyList()
-        var listGroupForward : List<String> = emptyList()
-        var listConversation : MutableList<Conversation> = mutableListOf()
-        db.collection(CONSTANT.KEY_USER).document(user.userId)
-            .get()
-            .addOnSuccessListener { value ->
-                if(value != null){
-                    listGroupId.plus(value.data?.get(CONSTANT.KEY_USER_LIST_GROUP_ID) as List<String>)
-                }
-            }.addOnFailureListener{
-                Log.d("TAG", "you can init list Group Container User")
-                return@addOnFailureListener
+        var listGroupId : MutableList<String> = mutableListOf()
+        db.collection(CONSTANT.KEY_USER).document(user.userId).get().addOnSuccessListener { value ->
+            if(value != null){
+                listGroupId.addAll(value.data?.get(CONSTANT.KEY_USER_LIST_GROUP_ID) as MutableList<String>)
             }
-        db.collection(CONSTANT.KEY_USER).document(user.userId)
-            .addSnapshotListener{ snapShot,e ->
-                if(e != null){
-                    return@addSnapshotListener
+        }.addOnFailureListener {
+            Log.d(TAG, "You can't init list groupId")
+        }.continueWith {
+            for (s in listGroupId){
+                db.collection(CONSTANT.KEY_GROUP).document(s).get().addOnSuccessListener { value ->
+                    conversationAdapter.value?.addConversation(getConversation(value, s))
                 }
-                if (snapShot != null && snapShot.exists()) {
-                            listGroupId = snapShot.data?.get(CONSTANT.KEY_USER_LIST_GROUP_ID) as List<String>
-                            if(listGroupForward.size == listGroupId.size){
-                                Log.d(TAG, "==" + listGroupId)
-                                return@addSnapshotListener
+            }
+        }.continueWith {
+            db.collection(CONSTANT.KEY_GROUP).whereArrayContains(CONSTANT.KEY_GROUP_LIST_MEMBER, user.userId)
+                .addSnapshotListener EventListener@{ snapShot, e ->
+                    if(e != null){
+                        Log.d(TAG, "error when listen")
+                    }
+                    if(snapShot != null ){
+                        for(doc in snapShot.documentChanges){
+                            Log.d(TAG,"snap shot size  " + snapShot.size())
+                            if( doc.type == DocumentChange.Type.MODIFIED){
+                                var mapConversation = doc.document[CONSTANT.KEY_CONVERSATION] as Map<* , *>
+                                var groupId = doc.document[CONSTANT.KEY_GROUP_ID] as String
+                                conversationAdapter.value?.addConversation(Conversation(mapConversation[CONSTANT.KEY_CONVERSATION_SENDER_NAME] as String,
+                                    mapConversation[CONSTANT.KEY_CONVERSATION_CONTENT] as String,
+                                    Inites.convertTimeStampToDate(mapConversation[CONSTANT.KEY_CONVERSATION_TIME_SEND] as Timestamp),
+                                    groupId,
+                                    doc.document.get(CONSTANT.KEY_GROUP_NAME) as String))
                             }
-                            else if(listGroupForward.size < listGroupId.size) {
-                                Log.d(TAG, "" + listGroupId)
-                                val listIn1 = listGroupId.minus(listGroupForward)
-                                for(s in listIn1){
-                                    db.collection(CONSTANT.KEY_GROUP).document(s).get()
-                                        .addOnSuccessListener { value ->
-                                            conversationAdapter.value?.addConversation(getConversation(value, s))
-                                            conversationAdapter.notifyObserver()
-                                        }
-                                }
+                            else if(doc.type == DocumentChange.Type.REMOVED){
+                                var mapConversation = doc.document[CONSTANT.KEY_CONVERSATION] as Map<* , *>
+                                var groupId = doc.document[CONSTANT.KEY_GROUP_ID] as String
+                                conversationAdapter.value?.removeConversation(Conversation(mapConversation[CONSTANT.KEY_CONVERSATION_SENDER_NAME] as String,
+                                    mapConversation[CONSTANT.KEY_CONVERSATION_CONTENT] as String,
+                                    Inites.convertTimeStampToDate(mapConversation[CONSTANT.KEY_CONVERSATION_TIME_SEND] as Timestamp),
+                                    groupId,
+                                    doc.document.get(CONSTANT.KEY_GROUP_NAME) as String))
                             }
-                            else {
-                                Log.d(TAG, "" + listGroupId)
-                                val listIn2 = listGroupForward.minus(listGroupId)
-                                for(s in listIn2){
-                                    db.collection(CONSTANT.KEY_GROUP).document(s).get()
-                                        .addOnSuccessListener { value ->
-                                            conversationAdapter.value?.removeConversation(getConversation(value, s))
-                                            conversationAdapter.notifyObserver()
-                                        }
-                                }
-                            }
-                            listGroupForward = listGroupId
                         }
-            }
-        for(s in listGroupId){
-            db.collection(CONSTANT.KEY_GROUP).document(s).get()
-                .addOnSuccessListener { value ->
-                    listConversation.add(getConversation(value, s))
+                        conversationAdapter.notifyObserver()
+                    }
                 }
         }
-        return listConversation
+
+        return mutableListOf()
     }
     private fun getConversation(snapShot: DocumentSnapshot, groupId: String): Conversation {
         val mapConversation = snapShot.data?.get(CONSTANT.KEY_CONVERSATION) as Map<*, *>
