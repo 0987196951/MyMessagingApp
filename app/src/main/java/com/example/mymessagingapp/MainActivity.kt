@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackWhe
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        user = User("234", "nguyen", "123456", "dmcsncc19@gmail.com", Date(), Date(), "asdawdssdfcas", false)
+        user = User("345", "nguyen viet tien", "123456", "dmcsncc19@gmail.com", Date(), Date(), "asdawdssdfcas", false)
         val currentFragment =supportFragmentManager.findFragmentById(R.id.fragment_container)
         if(currentFragment == null){
             val chatListFragment = ChatListFragment.newInstance(user)
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackWhe
 
     override fun onGroupExist( group: Group) {
         val chatFragment = ChatFragment.newInstance(user, group)
-        supportFragmentManager.beginTransaction().add(R.id.fragment_container, chatFragment).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, chatFragment).addToBackStack(null).commit()
     }
 
     override fun onMadeGroup(groupMade: Group) {
@@ -83,8 +83,6 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackWhe
         db.collection(CONSTANT.KEY_GROUP).document(group.groupId).collection(CONSTANT.KEY_MESSAGE)
         val userRef = db.collection(CONSTANT.KEY_USER)
         userRef.document(user.userId).update(CONSTANT.KEY_USER_LIST_GROUP_ID, FieldValue.arrayUnion(group.groupId))
-
-        //serRef.document(userFound.userId).update(CONSTANT.KEY_USER_LIST_GROUP_ID, FieldValue.arrayUnion(group.groupId))
         val chatFragment = ChatFragment.newInstance(user, groupMade)
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container, chatFragment)
             .addToBackStack(null).commit()

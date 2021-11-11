@@ -38,12 +38,6 @@ class ChatListViewModelFactory(val user : User,
         }.addOnFailureListener {
             Log.d(TAG, "You can't init list groupId")
         }.continueWith {
-            for (s in listGroupId){
-                db.collection(CONSTANT.KEY_GROUP).document(s).get().addOnSuccessListener { value ->
-                    conversationAdapter.value?.addConversation(getConversation(value, s))
-                }
-            }
-        }.continueWith {
             db.collection(CONSTANT.KEY_GROUP).whereArrayContains(CONSTANT.KEY_GROUP_LIST_MEMBER, user.userId)
                 .addSnapshotListener EventListener@{ snapShot, e ->
                     if(e != null){
@@ -51,8 +45,7 @@ class ChatListViewModelFactory(val user : User,
                     }
                     if(snapShot != null ){
                         for(doc in snapShot.documentChanges){
-                            Log.d(TAG,"snap shot size  " + snapShot.size())
-                            if( doc.type == DocumentChange.Type.MODIFIED){
+                            if( doc.type == DocumentChange.Type.MODIFIED || doc.type == DocumentChange.Type.ADDED){
                                 var mapConversation = doc.document[CONSTANT.KEY_CONVERSATION] as Map<* , *>
                                 var groupId = doc.document[CONSTANT.KEY_GROUP_ID] as String
                                 conversationAdapter.value?.addConversation(Conversation(mapConversation[CONSTANT.KEY_CONVERSATION_SENDER_NAME] as String,

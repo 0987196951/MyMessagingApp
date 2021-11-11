@@ -57,9 +57,7 @@ class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvide
                             val senderId = doc.document.getString(CONSTANT.KEY_MESSAGE_SENDER_ID) as String
                             val message = doc.document.getString(CONSTANT.KEY_MESSAGE_CONTENT) as String
                             val timeMessage = Inites.convertTimeStampToDate(doc.document[CONSTANT.KEY_MESSAGE_TIME_SEND] as Timestamp)
-                            listMessage.value?.add(ChatMessage(senderId, message, timeMessage)).let {
-                                listMessage.notifyObserver()
-                            }
+                            listMessage.value?.add(ChatMessage(senderId, message, timeMessage))
                             if(check == false) {
                                 continue
                             };
@@ -73,7 +71,11 @@ class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvide
                                 ))
                         }
                     }
+                    if(check == false){
+                        Collections.sort(listMessage.value)
+                    }
                     check = true
+                    listMessage.notifyObserver()
                 }
             }
     }
