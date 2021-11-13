@@ -13,58 +13,56 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.*
 private val TAG = "MainActivity"
-class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackWhenGroupExisted, CallBackFromMakeGroup, CallBackAfterSelectedGroup, CallBackFromChatList{
+class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFromMakeGroup, CallBackFromChatList{
     private lateinit var user : User
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        user = User("345", "nguyen viet tien", "123456", "dmcsncc19@gmail.com", Date(), Date(), "asdawdssdfcas", false)
+        user = User("234", "nguyen viet tien", "123456", "dmcsncc19@gmail.com", Date(), Date(), "asdawdssdfcas", false)
         val currentFragment =supportFragmentManager.findFragmentById(R.id.fragment_container)
         if(currentFragment == null){
             val chatListFragment = ChatListFragment.newInstance(user)
             supportFragmentManager.beginTransaction().add(R.id.fragment_container, chatListFragment).commit()
         }
     }
-    fun onUserLogin(user : User){
-
-    }
-    override fun onGroupSelected(user : User, group : Group){
-        val chatFragment = ChatFragment.newInstance(user, group)
-        supportFragmentManager.beginTransaction().add(R.id.fragment_container, chatFragment).commit()
-    }
-
     override fun onUserFound(userFound: User) {
-        val group = Group(UUID.randomUUID().toString(), userFound.name, Date(),  false, CONSTANT.IMAGE_DEFAULT)
-        val hashGroup = mapOf(
-            CONSTANT.KEY_GROUP_ID to group.groupId,
-            CONSTANT.KEY_GROUP_NAME to group.nameGroup,
-            CONSTANT.KEY_GROUP_CREATED to group.createdGroup,
-            CONSTANT.KEY_GROUP_LIST_MEMBER to listOf(user.userId, userFound.userId),
-            CONSTANT.KEY_IS_GROUP to group.isGroup,
-            CONSTANT.KEY_IMAGE_GROUP to group.imageGroup,
-            CONSTANT.KEY_CONVERSATION to mapOf(
-                CONSTANT.KEY_CONVERSATION_SENDER_NAME to "",
-                CONSTANT.KEY_CONVERSATION_CONTENT to "",
-                CONSTANT.KEY_CONVERSATION_TIME_SEND to Date()
-            )
-        )
-        val db= Firebase.firestore
-        db.collection(CONSTANT.KEY_GROUP).document(group.groupId).set(hashGroup)
-        db.collection(CONSTANT.KEY_GROUP).document(group.groupId).collection(CONSTANT.KEY_MESSAGE)
-        val userRef = db.collection(CONSTANT.KEY_USER)
-        userRef.document(user.userId).update(CONSTANT.KEY_USER_LIST_GROUP_ID, FieldValue.arrayUnion(group.groupId))
-        userRef.document(userFound.userId).update(CONSTANT.KEY_USER_LIST_GROUP_ID, FieldValue.arrayUnion(group.groupId))
-        val chatFragment = ChatFragment.newInstance(user, group)
-        supportFragmentManager.beginTransaction().add(R.id.fragment_container, chatFragment).commit()
-    }
+        Log.d(TAG, "call back onUserFound in Main userFound id ${userFound.userId}")
+        val callback  = object :  CallBackWhenCheckGroupExist{
+            override fun callBackGroupExisted(groupFind: Group) {
+                Log.d(TAG, "call back group existed")
+                val chatFragment = ChatFragment.newInstance(user, groupFind)
+                supportFragmentManager.beginTransaction().replace(R.id.fragment_container, chatFragment).addToBackStack(null).commit()
+            }
 
-    override fun onGroupExist( group: Group) {
-        val chatFragment = ChatFragment.newInstance(user, group)
-        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, chatFragment).addToBackStack(null).commit()
+            override fun callBackGroupNotExist() {
+                Log.d(TAG, "call back group didn't existed")
+                val group = Group(UUID.randomUUID().toString(), userFound.name, Date(),  false, CONSTANT.IMAGE_DEFAULT)
+                val hashGroup = mapOf(
+                    CONSTANT.KEY_GROUP_ID to group.groupId,
+                    CONSTANT.KEY_GROUP_NAME to group.nameGroup,
+                    CONSTANT.KEY_GROUP_CREATED to group.createdGroup,
+                    CONSTANT.KEY_GROUP_LIST_MEMBER to listOf(user.userId, userFound.userId),
+                    CONSTANT.KEY_IS_GROUP to false,
+                    CONSTANT.KEY_IMAGE_GROUP to group.imageGroup,
+                    CONSTANT.KEY_CONVERSATION to mapOf(
+                        CONSTANT.KEY_CONVERSATION_SENDER_NAME to "",
+                        CONSTANT.KEY_CONVERSATION_CONTENT to "",
+                        CONSTANT.KEY_CONVERSATION_TIME_SEND to Date()
+                    )
+                )
+                val db= Firebase.firestore
+                db.collection(CONSTANT.KEY_GROUP).document(group.groupId).set(hashGroup)
+                db.collection(CONSTANT.KEY_GROUP).document(group.groupId).collection(CONSTANT.KEY_MESSAGE)
+                val userRef = db.collection(CONSTANT.KEY_USER)
+                userRef.document(user.userId).update(CONSTANT.KEY_USER_LIST_GROUP_ID, FieldValue.arrayUnion(group.groupId))
+                userRef.document(userFound.userId).update(CONSTANT.KEY_USER_LIST_GROUP_ID, FieldValue.arrayUnion(group.groupId))
+                val chatFragment = ChatFragment.newInstance(user, group)
+                supportFragmentManager.beginTransaction().replace(R.id.fragment_container, chatFragment).addToBackStack(null).commit()
+            }
+        }
+       checkGroupIsExist(userFound, callback)
     }
-
-    override fun onMadeGroup(groupMade: Group) {
-        val group = Group(UUID.randomUUID().toString(), groupMade.nameGroup, Date(),  false, CONSTANT.IMAGE_DEFAULT)
+    override fun onMadeGroup(group: Group) {
         val hashGroup = mapOf(
             CONSTANT.KEY_GROUP_ID to group.groupId,
             CONSTANT.KEY_GROUP_NAME to group.nameGroup,
@@ -83,9 +81,32 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackWhe
         db.collection(CONSTANT.KEY_GROUP).document(group.groupId).collection(CONSTANT.KEY_MESSAGE)
         val userRef = db.collection(CONSTANT.KEY_USER)
         userRef.document(user.userId).update(CONSTANT.KEY_USER_LIST_GROUP_ID, FieldValue.arrayUnion(group.groupId))
-        val chatFragment = ChatFragment.newInstance(user, groupMade)
+        val chatFragment = ChatFragment.newInstance(user, group)
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container, chatFragment)
             .addToBackStack(null).commit()
+    }
+    private fun checkGroupIsExist(userFound : User, callback : CallBackWhenCheckGroupExist) {
+        var groupFind : Group? = null
+        Firebase.firestore.collection(CONSTANT.KEY_GROUP)
+            .whereEqualTo(CONSTANT.KEY_GROUP_IS_GROUP, false)
+            .whereArrayContains(CONSTANT.KEY_GROUP_LIST_MEMBER, listOf(userFound.userId, user.userId))
+            .get()
+            .addOnSuccessListener{ value ->
+                if(value != null && !value.isEmpty){
+                    Log.d(TAG, "value not null")
+                    for (doc in value){
+                        groupFind = Inites.getGroup(doc)
+                        break
+                    }
+                    Log.d(TAG, ""+ groupFind)
+                    groupFind?.let { callback.callBackGroupExisted(it) }
+                }
+                else {
+                    Log.d(TAG, "value null")
+                    callback.callBackGroupNotExist()
+                }
+            }
+
     }
 
     override fun onGroupSelected(groupId: String) {

@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,16 +11,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
-import com.example.mymessagingapp.CONSTANT
+import com.example.mymessagingapp.ChatListFragment
 import com.example.mymessagingapp.R
 import com.example.mymessagingapp.data.Conversation
-import com.example.mymessagingapp.data.Group
 import com.example.mymessagingapp.data.User
 import com.example.mymessagingapp.interfaces.CallBackFromChatList
 import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
-import java.util.*
 
 class  ConversationAdapter(private var user: User, private var list: List<Conversation>, var context: Context, var layoutInflater: LayoutInflater) :
     RecyclerView.Adapter<ConversationAdapter.ConversationHolder>() {
@@ -53,7 +49,7 @@ class  ConversationAdapter(private var user: User, private var list: List<Conver
         }
 
         override fun onClick(view : View?) {
-            callback.onGroupSelected(conversation.groupId)
+            (context as CallBackFromChatList).onGroupSelected(conversation.groupId)
         }
     }
     fun addConversation(con : Conversation){

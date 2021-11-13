@@ -5,6 +5,8 @@ import com.example.mymessagingapp.CONSTANT
 import com.example.mymessagingapp.data.Group
 import com.example.mymessagingapp.data.User
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.*
@@ -27,19 +29,24 @@ class Inites {
             val millisecond = time.seconds * 1000 + time.nanoseconds / 1000000
             return Date(millisecond)
         }
-        fun getGroup(groupId : String) : Group?{
-            var group : Group? = null
-            Firebase.firestore.collection(CONSTANT.KEY_GROUP).document(groupId).get()
-                .addOnSuccessListener { value ->
-                     group = Group(groupId, value.data?.get(CONSTANT.KEY_GROUP_NAME) as String,
-                        convertTimeStampToDate(value.data?.get(CONSTANT.KEY_GROUP_CREATED) as Timestamp),
-                         true,
-                         value.data?.get(CONSTANT.KEY_GROUP_IMAGE) as String
-                    )
-                }.addOnFailureListener{ e->
-                    Log.d("Inites" ,"Can't get group")
-                }
-            return group
+        fun getUser(doc : DocumentSnapshot) : User{
+            return User(doc.data?.get(CONSTANT.KEY_USER_ID) as  String,
+                doc.data!![CONSTANT.KEY_USER_NAME] as  String,
+                doc.data!![CONSTANT.KEY_USER_PASSWORD] as String,
+                doc.data!![CONSTANT.KEY_USER_GMAIL] as String,
+                convertTimeStampToDate(doc.data!![CONSTANT.KEY_USER_DATE_OF_BIRTH] as Timestamp),
+                convertTimeStampToDate(doc.data!![CONSTANT.KEY_USER_CREATE_ACCOUNT] as Timestamp),
+                doc.data!![CONSTANT.KEY_USER_IMAGE] as String,
+                false
+            )
+        }
+        fun getGroup(doc : QueryDocumentSnapshot) : Group{
+            return Group(doc.data[CONSTANT.KEY_GROUP_ID] as String,
+                doc.data[CONSTANT.KEY_GROUP_NAME] as String,
+                convertTimeStampToDate(doc.data[CONSTANT.KEY_GROUP_CREATED] as Timestamp),
+                doc.data[CONSTANT.KEY_GROUP_IS_GROUP] as Boolean,
+                doc.data[CONSTANT.KEY_GROUP_IMAGE] as String
+            )
         }
     }
 }

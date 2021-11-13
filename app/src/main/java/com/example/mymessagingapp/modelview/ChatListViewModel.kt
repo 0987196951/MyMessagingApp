@@ -14,17 +14,17 @@ import com.example.mymessagingapp.utilities.Inites
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.*
 private val TAG = "ChatListViewModel"
-class ChatListViewModelFactory(val user : User,
-                               private val context: Context,
-                               private val layoutInflater: LayoutInflater  ) : ViewModelProvider.Factory {
+class ChatListViewModelFactory(
+    val user: User,
+    private val context: Context?,
+    private val layoutInflater: LayoutInflater  ) : ViewModelProvider.Factory {
     private val db = Firebase.firestore
     val conversationAdapter : MutableLiveData<ConversationAdapter>
-        = MutableLiveData(ConversationAdapter(user,getConversationAndAddSnapShot(), context, layoutInflater))
+        = MutableLiveData(ConversationAdapter(user,getConversationAndAddSnapShot(), context!!, layoutInflater))
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return modelClass.getConstructor(User::class.java, Context::class.java, LayoutInflater::class.java)
             .newInstance(user, context, layoutInflater)
@@ -71,6 +71,7 @@ class ChatListViewModelFactory(val user : User,
 
         return mutableListOf()
     }
+
     private fun getConversation(snapShot: DocumentSnapshot, groupId: String): Conversation {
         val mapConversation = snapShot.data?.get(CONSTANT.KEY_CONVERSATION) as Map<*, *>
         return Conversation(mapConversation[CONSTANT.KEY_CONVERSATION_SENDER_NAME] as String,

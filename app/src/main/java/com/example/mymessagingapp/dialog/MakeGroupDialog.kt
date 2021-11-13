@@ -62,31 +62,9 @@ class MakeGroupDialog : DialogFragment() {
                         true,
                         encodedImage?:CONSTANT.IMAGE_DEFAULT
                     )
-                    val newGroup = hashMapOf(
-                        "groupId" to group.groupId,
-                        "nameGroup" to group.nameGroup,
-                        "createdGroup" to group.createdGroup,
-                        "isGroup" to true,
-                        "imageGroup" to group.imageGroup,
-                        "conversation" to mapOf(
-                            "senderId" to "",
-                            "content" to "",
-                            "timeSend" to ""
-                        )
-                    )
-                    Firebase.firestore.collection(CONSTANT.KEY_GROUP)
-                        .document(group.groupId).set(newGroup).addOnSuccessListener {
-                            Log.d(TAG, "Can up group to firebase")
-                        }.addOnFailureListener{ e->
-                            Log.d(TAG, "can't up group into firestore")
-                        }
                     targetFragment.let { fragment ->
                         (fragment as CallBackFromMakeGroup).onMadeGroup(group)
                     }
-                    /*Firebase.firestore.collection(CONSTANT.KEY_USER)
-                        .document(user.userId).update(mapOf(
-                            "member_list_id" to user.group_list_id.plus(group.groupId)
-                        ))*/
                     dialog?.dismiss()
                 }
             }

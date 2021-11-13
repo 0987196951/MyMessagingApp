@@ -17,19 +17,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mymessagingapp.adapter.ConversationAdapter
 import com.example.mymessagingapp.data.Group
 import com.example.mymessagingapp.data.User
+import com.example.mymessagingapp.dialog.ListUserFoundDialog
 import com.example.mymessagingapp.dialog.MakeGroupDialog
-import com.example.mymessagingapp.interfaces.CallBackFromChatList
-import com.example.mymessagingapp.interfaces.CallBackFromListUserFound
-import com.example.mymessagingapp.interfaces.CallBackFromMakeGroup
-import com.example.mymessagingapp.interfaces.CallBackWhenGroupExisted
+import com.example.mymessagingapp.interfaces.*
 import com.example.mymessagingapp.modelview.ChatListViewModelFactory
+import com.example.mymessagingapp.utilities.Inites
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.*
 private val DIALOG_MAKE_GROUP = "Make New Group"
+private val DIALOG_FIND_OTHER_USER = "Find other User"
 private val REQUEST_MAKE_GROUP = 1
+private val REQUEST_FIND_OTHER_USER = 2
 private val TAG = "ChatListFragment"
-class ChatListFragment : Fragment(), CallBackFromListUserFound, CallBackFromMakeGroup, CallBackFromChatList{
+class ChatListFragment : Fragment(), CallBackFromListUserFound, CallBackFromMakeGroup{
     private lateinit var imageUser : ImageView
     private lateinit var nameUser : TextView
     private lateinit var gmailUser : TextView
@@ -79,6 +82,15 @@ class ChatListFragment : Fragment(), CallBackFromListUserFound, CallBackFromMake
                 }
             }
         }
+        findOtherUserButton.setOnClickListener {
+            Log.d(TAG, "find other User with ${findOtherUser.text.toString()}")
+            ListUserFoundDialog.newInstance(findOtherUser.text.toString()).apply {
+                setTargetFragment(this@ChatListFragment, REQUEST_FIND_OTHER_USER).apply {
+                    show(this@ChatListFragment.requireFragmentManager(), DIALOG_FIND_OTHER_USER)
+                }
+            }
+            findOtherUser.text.clear()
+        }
     }
     private fun updateUI(conversationAdapter: ConversationAdapter){
         recyclerListConversation.adapter = conversationAdapter
@@ -94,10 +106,6 @@ class ChatListFragment : Fragment(), CallBackFromListUserFound, CallBackFromMake
                 }
             }
         )
-        findOtherUserButton.setOnClickListener {
-            val s = findOtherUser.text.toString()
-
-        }
     }
     companion object {
         fun newInstance(user : User): ChatListFragment {
@@ -111,48 +119,11 @@ class ChatListFragment : Fragment(), CallBackFromListUserFound, CallBackFromMake
     }
 
     override fun onUserFound(userFound: User) {
-        var s = checkGroupIsExist(userFound)
-        if(s == null)
-            (requireActivity() as CallBackFromListUserFound).onUserFound(userFound)
-        else {
-            Firebase.firestore.collection(CONSTANT.KEY_GROUP).document(s).get()
-                .addOnSuccessListener { value ->
-                    (requireActivity() as CallBackWhenGroupExisted).onGroupExist(
-                        Group(s,
-                            value.data?.get("nameGroup") as String,
-                            value.data!!["createdGroup"] as Date,
-                            value.data!!["isGroup"] as Boolean,
-                            value.data!!["imageGroup"] as String
-                        )
-                    )
-                }
-        }
+        Log.d(TAG, "onUserFound in ChatListFragment")
+        (requireContext() as CallBackFromListUserFound).onUserFound(userFound)
     }
+
     override fun onMadeGroup(groupMade: Group) {
-        (requireActivity() as CallBackFromMakeGroup).onMadeGroup(groupMade)
+        (requireContext() as CallBackFromMakeGroup).onMadeGroup(groupMade)
     }
-    private fun checkGroupIsExist(userFound : User) : String? {
-        var listGroupId : List<String> = emptyList()
-        Firebase.firestore.collection(CONSTANT.KEY_USER).document(user.userId).get()
-            .addOnSuccessListener { value ->
-                listGroupId = value.data?.get(CONSTANT.KEY_GROUP_ID) as List<String>
-            }
-        var groupIdCanFind : String? = null
-        Firebase.firestore.collection(CONSTANT.KEY_GROUP)
-            .whereEqualTo("isGroup", true)
-            .whereIn(CONSTANT.KEY_GROUP_ID, listGroupId)
-            .get().addOnSuccessListener { value ->
-                    if(value != null) {
-                        for(doc in value){
-                            groupIdCanFind = doc.data.get("groupId") as String
-                        }
-                    }
-            }
-        return groupIdCanFind
-    }
-
-    override fun onGroupSelected(groupId: String) {
-        (context as CallBackFromChatList).onGroupSelected(groupId)
-    }
-
 }

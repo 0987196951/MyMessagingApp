@@ -96,6 +96,7 @@ class ChatFragment : Fragment() {
         sendingMessage.addTextChangedListener(sendPlace)*/
         sendingMessageButton.setOnClickListener { v ->
             val s = sendingMessage.text.toString()
+            sendingMessage.text.clear()
             addNewMessage(s)
         }
     }

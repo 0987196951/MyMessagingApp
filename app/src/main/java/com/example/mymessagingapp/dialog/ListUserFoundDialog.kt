@@ -6,11 +6,14 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymessagingapp.R
@@ -19,42 +22,54 @@ import com.example.mymessagingapp.data.User
 import com.example.mymessagingapp.interfaces.CallBackFromListUserFound
 import com.example.mymessagingapp.modelview.FindOtherUserViewModel
 import java.lang.IllegalStateException
-
+private val TAG = "ListUserFoundDialog"
 class ListUserFoundDialog : DialogFragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var noteCanNotFind : TextView
-    private val key_find = arguments?.getSerializable(CONSTANT.KEY_FIND_OTHER_USER) as String
-    val listOtherUserViewModel : FindOtherUserViewModel by lazy {
-        FindOtherUserViewModel(key_find)
-    }
+    private lateinit var keyFind : String
+    private var listOtherUserViewModel : FindOtherUserViewModel? = null
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return activity?.let {
             val builder = AlertDialog.Builder(it)
-            val inflater =requireActivity().layoutInflater
+            val inflater = requireActivity().layoutInflater
             val view = inflater.inflate(R.layout.find_other_user, null)
             builder.setView(view)
+            builder.setTitle("Find other user")
+            keyFind = arguments?.getString(CONSTANT.KEY_FIND_OTHER_USER) as String
+            if(listOtherUserViewModel == null){
+                listOtherUserViewModel = FindOtherUserViewModel(keyFind)
+            }
             noteCanNotFind = view.findViewById(R.id.canNotOtherUser) as TextView
             recyclerView = view.findViewById(R.id.findOtherUserRecyclerview) as RecyclerView
-            recyclerView.adapter = OtherUserAdapter(listOtherUserViewModel.getListOtherUser())
             recyclerView.layoutManager = LinearLayoutManager(context)
-            if(listOtherUserViewModel.getListOtherUser().size == 0 ) {
-                noteCanNotFind.visibility = View.GONE
-            }
-            else {
-                noteCanNotFind.visibility = View.VISIBLE
-            }
+            listOtherUserViewModel!!.listOtherUser.observe(
+                this,
+                Observer { users ->
+                    updateUI(users)
+                }
+            )
             builder.create()
         }?: throw IllegalStateException("Activity other user can't find")
     }
+    private fun updateUI(users: MutableList<User>) {
+        val adapter = OtherUserAdapter(users)
+        recyclerView.adapter = adapter
+        if(users.size == 0 ) {
+            noteCanNotFind.visibility = View.VISIBLE
+        }
+        else {
+            noteCanNotFind.visibility = View.GONE
+        }
+    }
+
     private inner class OtherViewHolder(view : View) : RecyclerView.ViewHolder(view), View.OnClickListener {
         private lateinit var user : User
         private val imageOtherUser = view.findViewById(R.id.imageUserFound) as ImageView
         private val nameOtherFound = view.findViewById(R.id.nameUserFound) as TextView
         fun bind(user : User){
             this.user = user
-            imageOtherUser.setImageBitmap(getImage(user.image))
+            //imageOtherUser.setImageBitmap(getImage(user.image))
             nameOtherFound.text = user.name
-
         }
         init {
             itemView.setOnClickListener(this)
@@ -63,6 +78,7 @@ class ListUserFoundDialog : DialogFragment() {
             targetFragment.let {    fragment ->
                 (fragment as CallBackFromListUserFound).onUserFound(user)
             }
+            dismiss()
         }
     }
     private inner class OtherUserAdapter (val listOtherUser : List<User>)
@@ -83,11 +99,12 @@ class ListUserFoundDialog : DialogFragment() {
     }
     companion object {
         fun newInstance(key_find : String ) : ListUserFoundDialog {
-            val arg = Bundle().apply {
+            Log.d(TAG, "Key Find other user : $key_find")
+            val args = Bundle().apply {
                 putSerializable(CONSTANT.KEY_FIND_OTHER_USER, key_find)
             }
             return ListUserFoundDialog().apply {
-                arguments = arg
+                arguments = args
             }
         }
     }
