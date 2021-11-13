@@ -24,5 +24,7 @@
     <string name="cant_find_other_users">Can\'t find other user</string>
     <string name="user_found">User found</string>
     <string name="name_group">name group</string>
+    <string name="settings">settings</string>
+    <string name="add_user_to_group">add</string>
 
 </resources>

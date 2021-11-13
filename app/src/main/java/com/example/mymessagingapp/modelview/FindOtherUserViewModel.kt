@@ -18,7 +18,29 @@ class FindOtherUserViewModel(private val key_find : String) : ViewModelProvider.
     var listOtherUser : MutableLiveData<MutableList<User>> = MutableLiveData(mutableListOf())
     init {
         Firebase.firestore.collection(CONSTANT.KEY_USER)
-            .whereEqualTo(CONSTANT.KEY_USER_NAME, "nguyen")
+            .whereEqualTo(CONSTANT.KEY_USER_NAME, key_find)
+            //.whereGreaterThanOrEqualTo(CONSTANT.KEY_USER_NAME, key_find + '\uf8ff')
+            .get().addOnSuccessListener { values ->
+                if(values != null){
+                    for(doc in values){
+                        listOtherUser.value?.add(User(doc.data[CONSTANT.KEY_USER_ID] as  String,
+                            doc.data[CONSTANT.KEY_USER_NAME] as  String,
+                            doc.data[CONSTANT.KEY_USER_PASSWORD] as String,
+                            doc.data[CONSTANT.KEY_USER_GMAIL] as String,
+                            Inites.convertTimeStampToDate(doc.data[CONSTANT.KEY_USER_DATE_OF_BIRTH] as Timestamp),
+                            Inites.convertTimeStampToDate(doc.data[CONSTANT.KEY_USER_CREATE_ACCOUNT] as Timestamp),
+                            doc.data[CONSTANT.KEY_USER_IMAGE] as String,
+                            false
+                        ))
+                    }
+                }
+                listOtherUser.notifyObserver()
+            }
+    }
+    fun remakeListOtherUser(key_find : String){
+        listOtherUser.value?.clear()
+        Firebase.firestore.collection(CONSTANT.KEY_USER)
+            .whereEqualTo(CONSTANT.KEY_USER_NAME, key_find)
             //.whereGreaterThanOrEqualTo(CONSTANT.KEY_USER_NAME, key_find + '\uf8ff')
             .get().addOnSuccessListener { values ->
                 if(values != null){

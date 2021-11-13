@@ -10,6 +10,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
@@ -18,15 +20,21 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymessagingapp.R
 import com.example.mymessagingapp.CONSTANT
+import com.example.mymessagingapp.ChatFragment
+import com.example.mymessagingapp.ChatListFragment
 import com.example.mymessagingapp.data.User
+import com.example.mymessagingapp.interfaces.CallBackAddUserToGroup
 import com.example.mymessagingapp.interfaces.CallBackFromListUserFound
 import com.example.mymessagingapp.modelview.FindOtherUserViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.lang.IllegalStateException
 private val TAG = "ListUserFoundDialog"
 class ListUserFoundDialog : DialogFragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var noteCanNotFind : TextView
     private lateinit var keyFind : String
+    private lateinit var findOtherUserButton: Button
+    private lateinit var textFindOther : EditText
     private var listOtherUserViewModel : FindOtherUserViewModel? = null
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return activity?.let {
@@ -41,7 +49,15 @@ class ListUserFoundDialog : DialogFragment() {
             }
             noteCanNotFind = view.findViewById(R.id.canNotOtherUser) as TextView
             recyclerView = view.findViewById(R.id.findOtherUserRecyclerview) as RecyclerView
+            findOtherUserButton = view.findViewById(R.id.findOtherUserButtonInDialog) as Button
+            textFindOther = view.findViewById(R.id.findOtherUserEditTextInDialog) as EditText
             recyclerView.layoutManager = LinearLayoutManager(context)
+            findOtherUserButton.setOnClickListener { v->
+                if(textFindOther.text.isNotEmpty()){
+                    listOtherUserViewModel!!.remakeListOtherUser(textFindOther.text.toString())
+                }
+                textFindOther.text.clear()
+            }
             listOtherUserViewModel!!.listOtherUser.observe(
                 this,
                 Observer { users ->
@@ -76,7 +92,21 @@ class ListUserFoundDialog : DialogFragment() {
         }
         override fun onClick(view : View?) {
             targetFragment.let {    fragment ->
-                (fragment as CallBackFromListUserFound).onUserFound(user)
+                if(fragment is ChatListFragment){
+                        Log.d(TAG, "fragment adjust called is Chat List Fragment")
+                        (fragment as CallBackFromListUserFound).onUserFound(user)
+                }
+                else if(fragment is ChatFragment) {
+                    Log.d(TAG, "fragment adjust called is Chat Fragment")
+                    MaterialAlertDialogBuilder(context!!)
+                        .setMessage("Are you sure add ${user.name} into this group")
+                        .setPositiveButton("Accept"){ dialog, which ->
+                            (fragment as CallBackAddUserToGroup).onAddOtherUserToGroup(user)
+                        }
+                        .setNegativeButton("No"){ dialog, which ->
+                            dismiss()
+                        }.show()
+                }
             }
             dismiss()
         }

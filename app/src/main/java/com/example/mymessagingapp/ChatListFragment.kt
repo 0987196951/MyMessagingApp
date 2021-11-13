@@ -84,12 +84,14 @@ class ChatListFragment : Fragment(), CallBackFromListUserFound, CallBackFromMake
         }
         findOtherUserButton.setOnClickListener {
             Log.d(TAG, "find other User with ${findOtherUser.text.toString()}")
-            ListUserFoundDialog.newInstance(findOtherUser.text.toString()).apply {
-                setTargetFragment(this@ChatListFragment, REQUEST_FIND_OTHER_USER).apply {
-                    show(this@ChatListFragment.requireFragmentManager(), DIALOG_FIND_OTHER_USER)
+            if(!findOtherUser.text.isEmpty()){
+                ListUserFoundDialog.newInstance(findOtherUser.text.toString()).apply {
+                    setTargetFragment(this@ChatListFragment, REQUEST_FIND_OTHER_USER).apply {
+                        show(this@ChatListFragment.requireFragmentManager(), DIALOG_FIND_OTHER_USER)
+                    }
                 }
+                findOtherUser.text.clear()
             }
-            findOtherUser.text.clear()
         }
     }
     private fun updateUI(conversationAdapter: ConversationAdapter){
