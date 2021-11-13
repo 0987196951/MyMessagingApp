@@ -123,6 +123,7 @@ class ChatFragment : Fragment(), CallBackAddUserToGroup {
             this.message = chat
             if(viewType == CONSTANT.VIEW_TYPE_MESSAGE_SYSTEM){
                 contentMessage = view.findViewById(R.id.messageSystemInChat) as TextView
+                contentMessage.text = chat.message
                 return
             }
             imageMessage = view.findViewById(R.id.imageMessage) as ImageView
@@ -176,7 +177,7 @@ class ChatFragment : Fragment(), CallBackAddUserToGroup {
         }
 
         override fun getItemViewType(position: Int): Int {
-            if(chatMessages[position].senderId == "1111"){
+            if(chatMessages[position].senderId == CONSTANT.KEY_MESSAGE_SYSTEM_ID){
                 return CONSTANT.VIEW_TYPE_MESSAGE_SYSTEM
             }
             if(user.userId.equals(chatMessages[position].senderId)){
@@ -205,6 +206,7 @@ class ChatFragment : Fragment(), CallBackAddUserToGroup {
     }
     private fun addNewMessage(message : String ){
         var messageMap = hashMapOf(
+            CONSTANT.KEY_MESSAGE_SENDER_NAME to user.name,
             CONSTANT.KEY_MESSAGE_SENDER_ID to user.userId,
             CONSTANT.KEY_MESSAGE_CONTENT to message,
             CONSTANT.KEY_MESSAGE_TIME_SEND to Date()
@@ -227,17 +229,16 @@ class ChatFragment : Fragment(), CallBackAddUserToGroup {
                         }
                     }
                     if(check == true){
-                        /*val hashNewMessage = mapOf(
-                            CONSTANT.KEY_MESSAGE to mapOf(
+                        val hashNewMessage = mapOf(
+                                CONSTANT.KEY_MESSAGE_SENDER_NAME to "system",
                                 CONSTANT.KEY_MESSAGE_CONTENT to "${user.name} is ${userAdded.name} into this group",
                                 CONSTANT.KEY_MESSAGE_TIME_SEND to Date(),
-                                CONSTANT.KEY_MESSAGE_SENDER_ID to "1111"
-                            )
-                        )*/
+                                CONSTANT.KEY_MESSAGE_SENDER_ID to CONSTANT.KEY_MESSAGE_SYSTEM_ID
+                        )
                         db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
                             .update(CONSTANT.KEY_GROUP_LIST_MEMBER, FieldValue.arrayUnion(userAdded.userId))
-                        //db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
-                            //.collection(CONSTANT.KEY_MESSAGE).add(hashNewMessage)
+                        db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
+                            .collection(CONSTANT.KEY_MESSAGE).add(hashNewMessage)
                         db.collection(CONSTANT.KEY_USER_LIST_GROUP_ID).document(user.userId)
                             .update(CONSTANT.KEY_USER_LIST_GROUP_ID, FieldValue.arrayUnion(group.groupId))
                         MaterialAlertDialogBuilder(requireContext())

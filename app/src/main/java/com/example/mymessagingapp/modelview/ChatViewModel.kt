@@ -54,24 +54,24 @@ class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvide
                     for(doc in value.documentChanges){
                         if(doc.type == DocumentChange.Type.ADDED){
                             Log.d(TAG, "change message")
+                            val senderName = doc.document.getString(CONSTANT.KEY_MESSAGE_SENDER_NAME) as String
                             val senderId = doc.document.getString(CONSTANT.KEY_MESSAGE_SENDER_ID) as String
                             val message = doc.document.getString(CONSTANT.KEY_MESSAGE_CONTENT) as String
                             val timeMessage = Inites.convertTimeStampToDate(doc.document[CONSTANT.KEY_MESSAGE_TIME_SEND] as Timestamp)
-                            listMessage.value?.add(ChatMessage(senderId, message, timeMessage))
+                            listMessage.value?.add(ChatMessage(senderId, message, timeMessage, senderName))
                             if(check == false) {
                                 continue
                             }
-                            if(!senderId.equals( "1111")){
+                            if(!senderId.equals(CONSTANT.KEY_MESSAGE_SYSTEM_ID)){
                                 db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
                                     .update(mapOf(
                                         CONSTANT.KEY_CONVERSATION to mapOf(
-                                            CONSTANT.KEY_CONVERSATION_SENDER_NAME to senderId,
+                                            CONSTANT.KEY_CONVERSATION_SENDER_NAME to senderName,
                                             CONSTANT.KEY_CONVERSATION_CONTENT to message,
                                             CONSTANT.KEY_CONVERSATION_TIME_SEND to timeMessage
                                         )
                                     ))
                             }
-
                         }
                     }
                     if(check == false){
