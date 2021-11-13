@@ -60,15 +60,18 @@ class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvide
                             listMessage.value?.add(ChatMessage(senderId, message, timeMessage))
                             if(check == false) {
                                 continue
-                            };
-                            db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
-                                .update(mapOf(
-                                    CONSTANT.KEY_CONVERSATION to mapOf(
-                                        CONSTANT.KEY_CONVERSATION_SENDER_NAME to senderId,
-                                        CONSTANT.KEY_CONVERSATION_CONTENT to message,
-                                        CONSTANT.KEY_CONVERSATION_TIME_SEND to timeMessage
-                                    )
-                                ))
+                            }
+                            if(!senderId.equals( "1111")){
+                                db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
+                                    .update(mapOf(
+                                        CONSTANT.KEY_CONVERSATION to mapOf(
+                                            CONSTANT.KEY_CONVERSATION_SENDER_NAME to senderId,
+                                            CONSTANT.KEY_CONVERSATION_CONTENT to message,
+                                            CONSTANT.KEY_CONVERSATION_TIME_SEND to timeMessage
+                                        )
+                                    ))
+                            }
+
                         }
                     }
                     if(check == false){

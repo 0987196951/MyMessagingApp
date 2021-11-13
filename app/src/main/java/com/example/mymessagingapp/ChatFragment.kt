@@ -203,15 +203,6 @@ class ChatFragment : Fragment(), CallBackAddUserToGroup {
         val bytes = Base64.decode(encodeImage, Base64.DEFAULT)
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
-    private fun addNewConversation(message : String){
-        Firebase.firestore.collection(CONSTANT.KEY_GROUP).document(group.groupId).update(mapOf(
-            CONSTANT.KEY_CONVERSATION to mapOf(
-                CONSTANT.KEY_CONVERSATION_SENDER_NAME to user.name,
-                CONSTANT.KEY_CONVERSATION_CONTENT to message,
-                CONSTANT.KEY_CONVERSATION_TIME_SEND to Date()
-            ))
-        )
-    }
     private fun addNewMessage(message : String ){
         var messageMap = hashMapOf(
             CONSTANT.KEY_MESSAGE_SENDER_ID to user.userId,
@@ -236,17 +227,17 @@ class ChatFragment : Fragment(), CallBackAddUserToGroup {
                         }
                     }
                     if(check == true){
-                        val hashNewMessage = mapOf(
+                        /*val hashNewMessage = mapOf(
                             CONSTANT.KEY_MESSAGE to mapOf(
                                 CONSTANT.KEY_MESSAGE_CONTENT to "${user.name} is ${userAdded.name} into this group",
                                 CONSTANT.KEY_MESSAGE_TIME_SEND to Date(),
                                 CONSTANT.KEY_MESSAGE_SENDER_ID to "1111"
                             )
-                        )
+                        )*/
                         db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
                             .update(CONSTANT.KEY_GROUP_LIST_MEMBER, FieldValue.arrayUnion(userAdded.userId))
-                        db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
-                            .collection(CONSTANT.KEY_MESSAGE).add(hashNewMessage)
+                        //db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
+                            //.collection(CONSTANT.KEY_MESSAGE).add(hashNewMessage)
                         db.collection(CONSTANT.KEY_USER_LIST_GROUP_ID).document(user.userId)
                             .update(CONSTANT.KEY_USER_LIST_GROUP_ID, FieldValue.arrayUnion(group.groupId))
                         MaterialAlertDialogBuilder(requireContext())

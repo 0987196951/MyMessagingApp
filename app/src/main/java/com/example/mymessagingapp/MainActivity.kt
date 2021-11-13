@@ -76,17 +76,17 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFro
                 CONSTANT.KEY_CONVERSATION_TIME_SEND to Date()
             )
         )
-        val hashNewMessage = mapOf(
+        /*val hashNewMessage = mapOf(
             CONSTANT.KEY_MESSAGE to mapOf(
                 CONSTANT.KEY_MESSAGE_CONTENT to "${user.name} is made group",
                 CONSTANT.KEY_MESSAGE_TIME_SEND to Date(),
                 CONSTANT.KEY_MESSAGE_SENDER_ID to "1111"
             )
-        )
+        )*/
         val db= Firebase.firestore
         db.collection(CONSTANT.KEY_GROUP).document(group.groupId).set(hashGroup)
-            db.collection(CONSTANT.KEY_GROUP).document(group.groupId).collection(CONSTANT.KEY_MESSAGE)
-                .add(hashNewMessage)
+            //db.collection(CONSTANT.KEY_GROUP).document(group.groupId).collection(CONSTANT.KEY_MESSAGE)
+                //.add(hashNewMessage)
         val userRef = db.collection(CONSTANT.KEY_USER)
         userRef.document(user.userId).update(CONSTANT.KEY_USER_LIST_GROUP_ID, FieldValue.arrayUnion(group.groupId))
         val chatFragment = ChatFragment.newInstance(user, group)
