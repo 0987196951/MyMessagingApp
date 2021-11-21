@@ -26,5 +26,8 @@
     <string name="name_group">name group</string>
     <string name="settings">settings</string>
     <string name="add_user_to_group">add</string>
+    <string name="modify_information_user">Modify information User</string>
+    <string name="make_a_group">make a group</string>
+    <string name="log_out">Log out</string>
 
 </resources>

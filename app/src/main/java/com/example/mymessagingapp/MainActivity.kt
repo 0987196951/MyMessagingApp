@@ -9,20 +9,26 @@ import com.example.mymessagingapp.interfaces.*
 import com.example.mymessagingapp.utilities.Inites
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.*
 private val TAG = "MainActivity"
-class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFromMakeGroup, CallBackFromChatList{
+class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFromMakeGroup, CallBackFromChatList, CallBackWhenSeeInfoUser{
     private lateinit var user : User
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        user = User("345", "nguyen viet tien", "123456", "dmcsncc19@gmail.com", Date(), Date(), "asdawdssdfcas", false)
+        user = User("678", "nguyen viet tien", "123456", "dmcsncc19@gmail.com", Date(), Date(), "asdawdssdfcas", false)
         val currentFragment =supportFragmentManager.findFragmentById(R.id.fragment_container)
-        if(currentFragment == null){
+        /*if(currentFragment == null){
             val chatListFragment = ChatListFragment.newInstance(user)
             supportFragmentManager.beginTransaction().add(R.id.fragment_container, chatListFragment).commit()
+        }*/
+        if(currentFragment == null){
+            val signUpFragment = SignUpFragment.newInstance()
+            supportFragmentManager.beginTransaction().add(R.id.fragment_container, signUpFragment)
+                .commit()
         }
     }
     override fun onUserFound(userFound: User) {
@@ -31,12 +37,13 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFro
             override fun callBackGroupExisted(groupFind: Group) {
                 Log.d(TAG, "call back group existed")
                 val chatFragment = ChatFragment.newInstance(user, groupFind)
-                supportFragmentManager.beginTransaction().replace(R.id.fragment_container, chatFragment).addToBackStack(null).commit()
+                supportFragmentManager.beginTransaction().replace(R.id.fragment_container, chatFragment)
+                .addToBackStack(null).commit()
             }
-
             override fun callBackGroupNotExist() {
                 Log.d(TAG, "call back group didn't existed")
-                val group = Group(UUID.randomUUID().toString(), userFound.name, Date(),  false, CONSTANT.IMAGE_DEFAULT)
+                val group = Group(UUID.randomUUID().toString(),
+                    userFound.name, Date(),  false, CONSTANT.IMAGE_DEFAULT)
                 val hashGroup = mapOf(
                     CONSTANT.KEY_GROUP_ID to group.groupId,
                     CONSTANT.KEY_GROUP_NAME to group.nameGroup,
@@ -94,19 +101,26 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFro
     }
     private fun checkGroupIsExist(userFound : User, callback : CallBackWhenCheckGroupExist) {
         var groupFind : Group? = null
-        Firebase.firestore.collection(CONSTANT.KEY_GROUP)
+        Log.d(TAG, "" + user.userId + ' ' + userFound.userId)
+        val db = Firebase.firestore
+        db.collection(CONSTANT.KEY_GROUP)
             .whereEqualTo(CONSTANT.KEY_GROUP_IS_GROUP, false)
-            .whereArrayContains(CONSTANT.KEY_GROUP_LIST_MEMBER, listOf(userFound.userId, user.userId))
+            .whereArrayContains(CONSTANT.KEY_GROUP_LIST_MEMBER, user.userId)
             .get()
             .addOnSuccessListener{ value ->
                 if(value != null && !value.isEmpty){
-                    Log.d(TAG, "value not null")
-                    for (doc in value){
-                        groupFind = Inites.getGroup(doc)
-                        break
+                    var check = false
+                    for (doc in value.documents){
+                        if((doc.data?.get(CONSTANT.KEY_GROUP_LIST_MEMBER) as List<String>).contains(userFound.userId)){
+                            check = true
+                            groupFind = Inites.getGroup(doc as QueryDocumentSnapshot)
+                            callback.callBackGroupExisted(groupFind!!)
+                            break
+                        }
                     }
-                    Log.d(TAG, ""+ groupFind)
-                    groupFind?.let { callback.callBackGroupExisted(it) }
+                    if(!check){
+                        callback.callBackGroupNotExist()
+                    }
                 }
                 else {
                     Log.d(TAG, "value null")
@@ -126,9 +140,16 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFro
                     value.data?.get(CONSTANT.KEY_GROUP_IMAGE) as String
                 )
                 val chatFragment = ChatFragment.newInstance(user, group)
-                supportFragmentManager.beginTransaction().replace(R.id.fragment_container, chatFragment).addToBackStack(null).commit()
+                supportFragmentManager.beginTransaction().replace(R.id.fragment_container, chatFragment)
+                    .addToBackStack(null).commit()
             }.addOnFailureListener{ e->
                 Log.d("Inites" ,"Can't get group")
             }
+    }
+
+    override fun onSeeInfoUser() {
+        val infoUserFragment = MoreInfoUser.newInstance(user)
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, infoUserFragment)
+            .addToBackStack(null).commit()
     }
 }

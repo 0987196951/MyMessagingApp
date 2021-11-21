@@ -9,6 +9,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
 import java.util.*
 
 class Inites {
@@ -47,6 +48,10 @@ class Inites {
                 doc.data[CONSTANT.KEY_GROUP_IS_GROUP] as Boolean,
                 doc.data[CONSTANT.KEY_GROUP_IMAGE] as String
             )
+        }
+        fun parseDateFromString(s : String) : Date?{
+            val formatter = SimpleDateFormat("dd/mm/yyyy")
+            return formatter.parse(s)
         }
     }
 }

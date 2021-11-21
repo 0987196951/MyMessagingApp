@@ -32,12 +32,12 @@
                 android:text = "@string/gmail"/>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/addGroup"
+        <ImageButton
+            android:id="@+id/InfoUser"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="bottom"
-            android:text="@string/add_group"/>
+            android:icon = "@drawable/ic_action_name"/>
     </LinearLayout>
     <EditText
         android:id="@+id/chatListFindOtherUser"

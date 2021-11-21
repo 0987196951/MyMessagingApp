@@ -6,10 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,7 +33,7 @@ class ChatListFragment : Fragment(), CallBackFromListUserFound, CallBackFromMake
     private lateinit var imageUser : ImageView
     private lateinit var nameUser : TextView
     private lateinit var gmailUser : TextView
-    private lateinit var addGroup: Button
+    private lateinit var moreInfo: ImageButton
     private lateinit var findOtherUserButton : Button
     private lateinit var recyclerListConversation: RecyclerView
     private lateinit var recyclerViewAdapter: ConversationAdapter
@@ -62,7 +59,7 @@ class ChatListFragment : Fragment(), CallBackFromListUserFound, CallBackFromMake
         imageUser = view.findViewById(R.id.chatListImageUser) as ImageView
         nameUser = view.findViewById((R.id.chatListUserName)) as TextView
         gmailUser = view.findViewById(R.id.chatListUserGmail) as TextView
-        addGroup = view.findViewById(R.id.addGroup) as Button
+        moreInfo = view.findViewById(R.id.InfoUser) as ImageButton
         findOtherUserButton = view.findViewById(R.id.findOtherUserButton) as Button
         findOtherUser = view.findViewById(R.id.chatListFindOtherUser) as EditText
         recyclerListConversation = view.findViewById(R.id.recyclerListConversation) as RecyclerView
@@ -75,12 +72,8 @@ class ChatListFragment : Fragment(), CallBackFromListUserFound, CallBackFromMake
         super.onViewCreated(view, savedInstanceState)
         nameUser.text = user.name
         gmailUser.text = user.gmail
-        addGroup.setOnClickListener{
-            MakeGroupDialog.newInstance(user).apply {
-                setTargetFragment(this@ChatListFragment, REQUEST_MAKE_GROUP ).apply {
-                    show(this@ChatListFragment.requireFragmentManager(), DIALOG_MAKE_GROUP)
-                }
-            }
+        moreInfo.setOnClickListener{
+            (requireActivity() as CallBackWhenSeeInfoUser).onSeeInfoUser()
         }
         findOtherUserButton.setOnClickListener {
             Log.d(TAG, "find other User with ${findOtherUser.text.toString()}")
