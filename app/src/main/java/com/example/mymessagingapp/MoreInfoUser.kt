@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.example.mymessagingapp.data.User
 import com.example.mymessagingapp.dialog.MakeGroupDialog
+import com.example.mymessagingapp.interfaces.CallBackWhenModifyDataUser
 import com.example.mymessagingapp.interfaces.CallBackWhenSeeInfoUser
 
 private val DIALOG_MAKE_GROUP = "Make New Group"
@@ -50,7 +51,7 @@ class MoreInfoUser : Fragment(){
             }
         }
         modifyInfoUser.setOnClickListener {
-            (requireActivity() as CallBackWhenSeeInfoUser).onSeeInfoUser()
+            (requireContext() as CallBackWhenModifyDataUser).onModify(user)
         }
     }
     private fun getImage(encodeImage : String) : Bitmap {

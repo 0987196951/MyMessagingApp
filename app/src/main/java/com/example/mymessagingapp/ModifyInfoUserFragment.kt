@@ -22,13 +22,13 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
+import java.text.ParseException
 
 private const val RESULT_OK = 1
 private const val TAG = "ModifyInfoUserFragment"
 class ModifyInfoUserFragment : Fragment() {
     private lateinit var user : User
     private var encodedImage: String? = null
-    private lateinit var preferenceManager: PreferenceManager
     private lateinit var imageProfile : ImageView
     private lateinit var inputName : EditText
     private lateinit var inputDate : EditText
@@ -37,6 +37,7 @@ class ModifyInfoUserFragment : Fragment() {
     private lateinit var inputConfirmPassword : EditText
     private lateinit var acceptModifyButton : Button
     private lateinit var progressBar : ProgressBar
+    private lateinit var dayCreatedAccount : TextView
     private var isChangePassword : Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,19 +58,21 @@ class ModifyInfoUserFragment : Fragment() {
         inputConfirmPassword = view.findViewById(R.id.inputConfirmPassword) as EditText
         progressBar = view.findViewById(R.id.progressBar) as ProgressBar
         acceptModifyButton = view.findViewById(R.id.accept_modify) as Button
+        dayCreatedAccount = view.findViewById(R.id.dayCreatedAccount) as TextView
         return view
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         encodedImage = user.image
         imageProfile.setImageBitmap(getImage(user.image))
         inputName.setText(user.name, TextView.BufferType.EDITABLE)
-        inputDate.setText(user.dateOfBirth.toString(), TextView.BufferType.EDITABLE)
+        inputDate.setText(Inites.parseDateToString(user.dateOfBirth), TextView.BufferType.EDITABLE)
+        dayCreatedAccount.text = Inites.parseDateToString(user.accountCreate)
         inputEmail.text = user.gmail
         inputPassword.setText(user.password)
+        inputConfirmPassword.visibility = View.GONE
         inputPassword.setOnClickListener {
-            isChangePassword = true
+            inputConfirmPassword.visibility = View.VISIBLE
         }
         imageProfile.setOnClickListener { v ->
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
@@ -79,13 +82,19 @@ class ModifyInfoUserFragment : Fragment() {
         acceptModifyButton.setOnClickListener {
             loading(true)
             if(checkInvalid(isChangePassword)){
-                val hashMapChange = mapOf(
-                    CONSTANT.KEY_USER_NAME to inputName.toString().trim(),
-                    CONSTANT.KEY_USER_DATE_OF_BIRTH to Inites.parseDateFromString(inputDate.toString().trim()),
-                    CONSTANT.KEY_USER_IMAGE to encodedImage,
-                    CONSTANT.KEY_USER_PASSWORD to inputPassword.toString().trim()
-                )
-                Firebase.firestore.collection(CONSTANT.KEY_USER).document(user.userId).update(hashMapChange)
+                try {
+                    val date = Inites.parseDateFromString(inputDate.text.toString().trim())
+                    val hashMapChange = mapOf(
+                        CONSTANT.KEY_USER_NAME to inputName.text.toString().trim(),
+                        CONSTANT.KEY_USER_DATE_OF_BIRTH to date,
+                        CONSTANT.KEY_USER_IMAGE to encodedImage,
+                        CONSTANT.KEY_USER_PASSWORD to inputPassword.text.toString().trim()
+                    )
+                    Firebase.firestore.collection(CONSTANT.KEY_USER).document(user.userId).update(hashMapChange)
+                    showToast("modify data user success")
+                }catch (e : ParseException){
+                    showToast("date input must to pattern dd/MM/yyyy")
+                }
             }
         }
     }
@@ -149,6 +158,7 @@ class ModifyInfoUserFragment : Fragment() {
                 val bitmap = BitmapFactory.decodeStream(inputStream)
                 imageProfile.setImageBitmap(bitmap)
                 encodedImage = encodeImage(bitmap)
+                user.image = encodedImage as String
                 Log.d(TAG, "encode Image is : " + encodedImage)
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()

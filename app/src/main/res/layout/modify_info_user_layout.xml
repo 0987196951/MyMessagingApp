@@ -14,12 +14,6 @@
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/create_new_account"
-            />
-
         <FrameLayout
             android:id="@+id/layoutImage"
             android:layout_width="wrap_content"
@@ -51,10 +45,16 @@
             android:imeOptions="actionNext"
             android:importantForAutofill="no"
             android:inputType="text"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:id="@+id/dayCreatedAccount"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textSize="20dp"
             android:id="@+id/inputEmail"
             android:importantForAutofill="no" />
 

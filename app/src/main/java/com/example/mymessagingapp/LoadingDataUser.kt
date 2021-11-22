@@ -39,7 +39,6 @@ class LoadingDataUser : Fragment() {
         progress.visibility = View.VISIBLE
         lateinit var gmail : String
         lateinit var password : String
-        writeData()
         var fileInput = context?.openFileInput(fileName)
         //Log.d(TAG, "file name $fileName" + fileInput?.available())
         if(fileInput?.available()!! > 0){

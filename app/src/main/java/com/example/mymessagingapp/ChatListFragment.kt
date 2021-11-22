@@ -72,6 +72,7 @@ class ChatListFragment : Fragment(), CallBackFromListUserFound, CallBackFromMake
         super.onViewCreated(view, savedInstanceState)
         nameUser.text = user.name
         gmailUser.text = user.gmail
+        imageUser.setImageBitmap(Inites.getImage(user.image))
         moreInfo.setOnClickListener{
             (requireActivity() as CallBackWhenSeeInfoUser).onSeeInfoUser()
         }

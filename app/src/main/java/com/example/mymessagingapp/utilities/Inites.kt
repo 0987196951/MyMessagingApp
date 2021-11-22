@@ -1,5 +1,8 @@
 package com.example.mymessagingapp.utilities
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.util.Log
 import com.example.mymessagingapp.CONSTANT
 import com.example.mymessagingapp.data.Group
@@ -14,6 +17,9 @@ import java.util.*
 
 class Inites {
     companion object {
+        private val formatter = SimpleDateFormat("dd/MM/yyyy").apply {
+            this.isLenient = false
+        }
         fun initForUser(map : Map<String, Any>) : User {
             return User(
                 map[CONSTANT.KEY_USER_ID] as String,
@@ -50,8 +56,14 @@ class Inites {
             )
         }
         fun parseDateFromString(s : String) : Date?{
-            val formatter = SimpleDateFormat("dd/mm/yyyy")
             return formatter.parse(s)
+        }
+        fun parseDateToString(date : Date) : String {
+            return formatter.format(date)
+        }
+        fun getImage(encodeImage : String) : Bitmap {
+            val bytes = Base64.decode(encodeImage, Base64.DEFAULT)
+            return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
         }
     }
 }
