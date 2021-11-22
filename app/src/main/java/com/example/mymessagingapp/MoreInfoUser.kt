@@ -40,7 +40,6 @@ class MoreInfoUser : Fragment(){
         logOut = view.findViewById(R.id.logOut) as TextView
         return view
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         imageUser.setImageBitmap(getImage(user.image))
         makeGroupButton.setOnClickListener { v ->

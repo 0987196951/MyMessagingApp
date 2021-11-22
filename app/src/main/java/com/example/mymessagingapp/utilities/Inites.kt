@@ -38,7 +38,7 @@ class Inites {
                 convertTimeStampToDate(doc.data!![CONSTANT.KEY_USER_DATE_OF_BIRTH] as Timestamp),
                 convertTimeStampToDate(doc.data!![CONSTANT.KEY_USER_CREATE_ACCOUNT] as Timestamp),
                 doc.data!![CONSTANT.KEY_USER_IMAGE] as String,
-                false
+                true
             )
         }
         fun getGroup(doc : QueryDocumentSnapshot) : Group{

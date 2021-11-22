@@ -14,7 +14,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.*
 private val TAG = "MainActivity"
-class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFromMakeGroup, CallBackFromChatList, CallBackWhenSeeInfoUser{
+class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFromMakeGroup, CallBackFromChatList, CallBackWhenSeeInfoUser, CallBackWhenAutoLoginSuccess, CallBackWhenLoginNotSuccess{
     private lateinit var user : User
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,14 +22,26 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFro
         user = User("aa28b978-8a0e-4137-a836-6b533abb2deb", "tran duc thanh", "123456", "dmcsncc19@gmail.com", Date(), Date(), "asdawdssdfcas", false)
         val currentFragment =supportFragmentManager.findFragmentById(R.id.fragment_container)
         if(currentFragment == null){
-            val chatListFragment = ChatListFragment.newInstance(user)
-            supportFragmentManager.beginTransaction().add(R.id.fragment_container, chatListFragment).commit()
+            val loadingDataUser = LoadingDataUser.newInstance()
+            supportFragmentManager.beginTransaction().add(R.id.fragment_container, loadingDataUser).commit()
         }
         /*if(currentFragment == null){
             val signUpFragment = SignUpFragment.newInstance()
             supportFragmentManager.beginTransaction().add(R.id.fragment_container, signUpFragment)
                 .commit()
         }*/
+    }
+    override fun onLogin(user : User) {
+        this.user = user
+        val chatListFragment = ChatListFragment.newInstance(user)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, chatListFragment).addToBackStack(null).commit()
+    }
+    override fun onSignIn() {
+       // val currentFragment =supportFragmentManager.findFragmentById(R.id.fragment_container)
+        val chatListFragment = ChatListFragment.newInstance(user)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, chatListFragment).addToBackStack(null).commit()
     }
     override fun onUserFound(userFound: User) {
         Log.d(TAG, "call back onUserFound in Main userFound id ${userFound.userId}")
