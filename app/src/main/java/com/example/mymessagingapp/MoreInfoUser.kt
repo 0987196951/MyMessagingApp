@@ -11,15 +11,17 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import com.example.mymessagingapp.data.Group
 import com.example.mymessagingapp.data.User
 import com.example.mymessagingapp.dialog.MakeGroupDialog
+import com.example.mymessagingapp.interfaces.CallBackFromMakeGroup
 import com.example.mymessagingapp.interfaces.CallBackWhenModifyDataUser
 import com.example.mymessagingapp.interfaces.CallBackWhenSeeInfoUser
 
 private val DIALOG_MAKE_GROUP = "Make New Group"
 private val REQUEST_MAKE_GROUP = 1
 
-class MoreInfoUser : Fragment(){
+class MoreInfoUser : Fragment(), CallBackFromMakeGroup{
     private lateinit var user : User
     private lateinit var imageUser : ImageView
     private lateinit var modifyInfoUser : TextView
@@ -67,5 +69,8 @@ class MoreInfoUser : Fragment(){
                 arguments = args
             }
         }
+    }
+    override fun onMadeGroup(groupMade: Group) {
+        (requireContext() as CallBackFromMakeGroup).onMadeGroup(groupMade)
     }
 }

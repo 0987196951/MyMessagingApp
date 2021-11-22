@@ -15,7 +15,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import com.example.mymessagingapp.data.Group
 import com.example.mymessagingapp.data.User
+import com.example.mymessagingapp.interfaces.CallBackFromMakeGroup
 import com.example.mymessagingapp.interfaces.CallBackWhenCheckInvalidSignUpOrModifyInfo
 import com.example.mymessagingapp.utilities.Inites
 import com.google.firebase.firestore.ktx.firestore

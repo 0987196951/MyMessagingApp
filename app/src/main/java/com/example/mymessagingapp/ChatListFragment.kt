@@ -29,7 +29,7 @@ private val DIALOG_FIND_OTHER_USER = "Find other User"
 private val REQUEST_MAKE_GROUP = 1
 private val REQUEST_FIND_OTHER_USER = 2
 private val TAG = "ChatListFragment"
-class ChatListFragment : Fragment(), CallBackFromListUserFound, CallBackFromMakeGroup{
+class ChatListFragment : Fragment(), CallBackFromListUserFound{
     private lateinit var imageUser : ImageView
     private lateinit var nameUser : TextView
     private lateinit var gmailUser : TextView
@@ -119,7 +119,4 @@ class ChatListFragment : Fragment(), CallBackFromListUserFound, CallBackFromMake
         (requireContext() as CallBackFromListUserFound).onUserFound(userFound)
     }
 
-    override fun onMadeGroup(groupMade: Group) {
-        (requireContext() as CallBackFromMakeGroup).onMadeGroup(groupMade)
-    }
 }
