@@ -1,6 +1,9 @@
 package com.example.mymessagingapp
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,6 +42,7 @@ class MoreInfoUser : Fragment(){
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        imageUser.setImageBitmap(getImage(user.image))
         makeGroupButton.setOnClickListener { v ->
             MakeGroupDialog.newInstance(user).apply {
                 setTargetFragment(this@MoreInfoUser, REQUEST_MAKE_GROUP ).apply {
@@ -49,6 +53,10 @@ class MoreInfoUser : Fragment(){
         modifyInfoUser.setOnClickListener {
             (requireActivity() as CallBackWhenSeeInfoUser).onSeeInfoUser()
         }
+    }
+    private fun getImage(encodeImage : String) : Bitmap {
+        val bytes = Base64.decode(encodeImage, Base64.DEFAULT)
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
     companion object {
         fun newInstance(user : User) : MoreInfoUser {

@@ -21,15 +21,15 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFro
         setContentView(R.layout.activity_main)
         user = User("aa28b978-8a0e-4137-a836-6b533abb2deb", "tran duc thanh", "123456", "dmcsncc19@gmail.com", Date(), Date(), "asdawdssdfcas", false)
         val currentFragment =supportFragmentManager.findFragmentById(R.id.fragment_container)
-        /*if(currentFragment == null){
+        if(currentFragment == null){
             val chatListFragment = ChatListFragment.newInstance(user)
             supportFragmentManager.beginTransaction().add(R.id.fragment_container, chatListFragment).commit()
-        }*/
-        if(currentFragment == null){
+        }
+        /*if(currentFragment == null){
             val signUpFragment = SignUpFragment.newInstance()
             supportFragmentManager.beginTransaction().add(R.id.fragment_container, signUpFragment)
                 .commit()
-        }
+        }*/
     }
     override fun onUserFound(userFound: User) {
         Log.d(TAG, "call back onUserFound in Main userFound id ${userFound.userId}")

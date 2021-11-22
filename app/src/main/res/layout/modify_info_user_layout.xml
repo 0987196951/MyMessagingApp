@@ -52,14 +52,11 @@
             android:importantForAutofill="no"
             android:inputType="text"/>
 
-        <EditText
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/inputEmail"
-            android:hint="Email"
-            android:imeOptions="actionNext"
-            android:importantForAutofill="no"
-            android:inputType="textEmailAddress"/>
+            android:importantForAutofill="no" />
 
         <EditText
             android:layout_width="match_parent"

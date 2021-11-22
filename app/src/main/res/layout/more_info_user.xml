@@ -13,16 +13,19 @@
         android:id="@+id/modifyInfoUser"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/modify_information_user"/>
+        android:text="@string/modify_information_user"
+        android:padding="16dp"/>
     <TextView
         android:id="@+id/makeGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/make_a_group"/>
+        android:text="@string/make_a_group"
+        android:padding="16dp"/>
     <TextView
         android:id="@+id/logOut"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/log_out"
-        androidx:drawableLeftCompat="@drawable/baseline_logout_black_24dp" />
+        androidx:drawableLeftCompat="@drawable/log_out"
+        android:padding="16dp"/>
 </LinearLayout>
