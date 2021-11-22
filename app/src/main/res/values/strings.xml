@@ -29,5 +29,6 @@
     <string name="modify_information_user">Modify information User</string>
     <string name="make_a_group">make a group</string>
     <string name="log_out">Log out</string>
+    <string name="accept_modify">accept</string>
 
 </resources>

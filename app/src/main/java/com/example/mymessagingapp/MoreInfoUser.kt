@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.example.mymessagingapp.data.User
 import com.example.mymessagingapp.dialog.MakeGroupDialog
+import com.example.mymessagingapp.interfaces.CallBackWhenSeeInfoUser
 
 private val DIALOG_MAKE_GROUP = "Make New Group"
 private val REQUEST_MAKE_GROUP = 1
@@ -45,7 +46,9 @@ class MoreInfoUser : Fragment(){
                 }
             }
         }
-
+        modifyInfoUser.setOnClickListener {
+            (requireActivity() as CallBackWhenSeeInfoUser).onSeeInfoUser()
+        }
     }
     companion object {
         fun newInstance(user : User) : MoreInfoUser {

@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.Image
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.provider.MediaStore
@@ -15,17 +14,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import com.example.mymessagingapp.interfaces.CallBackWhenCheckInvalidSignUpOrModifyInfo
 import com.example.mymessagingapp.utilities.Inites
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessagingService
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
 import java.util.*
 import kotlin.collections.HashMap
+
 private val RESULT_OK = 1
 private val TAG = "SignUpFragment"
 class SignUpFragment : Fragment() {
@@ -67,9 +66,18 @@ class SignUpFragment : Fragment() {
     }
     private fun setListeners() {
         buttonSignUp.setOnClickListener { v ->
-            if (isValidSignUpDetails()) {
-                signUp()
+            loading(true)
+            val callBackInvalid = object: CallBackWhenCheckInvalidSignUpOrModifyInfo{
+                override fun onValid() {
+                    Toast.makeText(context, "make account success", Toast.LENGTH_SHORT).show()
+                    signUp()
+                }
+
+                override fun onInvalid() {
+                    Toast.makeText(context, inputEmail.text.toString() + "is already existed", Toast.LENGTH_SHORT).show()
+                }
             }
+            isValidSignUpDetails(callBackInvalid)
         }
         imageProfile.setOnClickListener { v ->
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
@@ -86,13 +94,19 @@ class SignUpFragment : Fragment() {
         loading(true)
         val database = Firebase.firestore
         val user = HashMap<String, Any?>()
+        val userId = UUID.randomUUID().toString()
+        user[CONSTANT.KEY_USER_ID] = userId
         user[CONSTANT.KEY_USER_NAME] = inputName.text.toString()
         user[CONSTANT.KEY_USER_DATE_OF_BIRTH] = Inites.parseDateFromString(inputDate.text.toString())
         user[CONSTANT.KEY_USER_GMAIL] = inputEmail.text.toString()
         user[CONSTANT.KEY_USER_PASSWORD] = inputPassword.text.toString()
         user[CONSTANT.KEY_USER_IMAGE] = encodedImage
+        user[CONSTANT.KEY_USER_LIST_GROUP_ID] = emptyList<String>()
+        user[CONSTANT.KEY_USER_CREATE_ACCOUNT] = Date()
+        user[CONSTANT.KEY_USER_IS_ACTIVE] = false
+        user[CONSTANT.KEY_USER_FCM_TOKEN] = ""
         database.collection(CONSTANT.KEY_USER)
-            .add(user)
+            .document(userId).set(user)
             .addOnSuccessListener { value ->
                 loading(false)
                 onDestroy()
@@ -132,36 +146,57 @@ class SignUpFragment : Fragment() {
         }
     }
 
-    private fun isValidSignUpDetails(): Boolean {
+    private fun isValidSignUpDetails(callback : CallBackWhenCheckInvalidSignUpOrModifyInfo){
         if (encodedImage == null) {
+            loading(false)
             showToast("Select profile image")
-            return false
+            return
         } else if (inputName.text.toString().trim().isEmpty()) {
+            loading(false)
             showToast("Enter Name")
-            return false
+            return
         }
         else if (inputDate.text.toString().trim().isEmpty()) {
+            loading(false)
             showToast("Enter Date of Birth")
         }
-
         else if (inputEmail.text.toString().trim().isEmpty()) {
+            loading(false)
             showToast("Enter Email")
-            return false
+            return
         } else if (!Patterns.EMAIL_ADDRESS.matcher(inputEmail.text.toString()).matches()) {
+            loading(false)
             showToast("Enter valid Email")
-            return false
+            return
         } else if (inputPassword.text.toString().trim().isEmpty()) {
+            loading(false)
             showToast("Enter Password")
-            return false
+            return
         } else if (inputConfirmPassword.text.toString().trim().isEmpty()) {
+            loading(false)
             showToast("Enter Confirm Password")
-            return false
+            return
         } else if (inputPassword.text.toString() != inputConfirmPassword.text.toString()
         ) {
+            loading(false)
             showToast("Password and confirm password must be same")
-            return false
+            return
         }
-        return true
+        else{
+            Firebase.firestore.collection(CONSTANT.KEY_USER)
+                .whereEqualTo(CONSTANT.KEY_USER_GMAIL, inputEmail.text.toString())
+                .get()
+                .addOnSuccessListener { value ->
+                    if(value != null && !value.isEmpty){
+                        loading(false)
+                        callback.onInvalid()
+                    }
+                    else {
+                        loading(false)
+                        callback.onValid()
+                    }
+                }
+        }
     }
 
     private fun loading(isLoading: Boolean) {

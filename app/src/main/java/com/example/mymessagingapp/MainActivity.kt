@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFro
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        user = User("678", "nguyen viet tien", "123456", "dmcsncc19@gmail.com", Date(), Date(), "asdawdssdfcas", false)
+        user = User("aa28b978-8a0e-4137-a836-6b533abb2deb", "tran duc thanh", "123456", "dmcsncc19@gmail.com", Date(), Date(), "asdawdssdfcas", false)
         val currentFragment =supportFragmentManager.findFragmentById(R.id.fragment_container)
         /*if(currentFragment == null){
             val chatListFragment = ChatListFragment.newInstance(user)
