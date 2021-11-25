@@ -54,6 +54,9 @@ class ChatFragment : Fragment(){
         nameReceiver = view.findViewById(R.id.nameReceiverChatMessage) as TextView
         imageReceiver = view.findViewById(R.id.imageReceiverChatMessage) as ImageView
         moreInfo = view.findViewById(R.id.moreInfoGroup) as ImageButton
+        if(!group.isGroup) {
+            moreInfo.visibility = View.GONE
+        }
         messageRecyclerView = view.findViewById(R.id.chatListRecyclerView) as RecyclerView
         var linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.reverseLayout = false
