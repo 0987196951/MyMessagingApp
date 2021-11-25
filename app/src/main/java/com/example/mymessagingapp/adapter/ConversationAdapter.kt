@@ -24,7 +24,7 @@ private const val TAG = "ConversationAdapter"
 class  ConversationAdapter(private var user: User, private var list: List<Conversation>, var context: Context, var layoutInflater: LayoutInflater) :
     RecyclerView.Adapter<ConversationAdapter.ConversationHolder>() {
     val db = Firebase.firestore
-    private var mId : HashMap<String, Conversation> = hashMapOf()
+    private var mId : MutableMap<String, Conversation> = mutableMapOf()
     private var callback : CallBackFromChatList
     private var mSortedList : SortedList<Conversation> =
         SortedList(Conversation::class.java, SortedListConversationAdapter(this));
@@ -57,21 +57,21 @@ class  ConversationAdapter(private var user: User, private var list: List<Conver
         var con1 = mId.get(con.groupId)
         if(con1 == null){
             mSortedList.add(con)
-            mId.put(con.groupId, con)
         }
         else {
             mSortedList.updateItemAt(mSortedList.indexOf(con1), con)
         }
+        mId.put(con.groupId, con)
     }
     fun removeConversation(con : Conversation){
         var con1 = mId.get(con.groupId)
         if(con1 == null){
             mSortedList.add(con)
-            mId.put(con.groupId, con)
         }
         else {
             mSortedList.removeItemAt(mSortedList.indexOf(con1))
         }
+        mId.put(con.groupId, con)
     }
     fun removeConversationAt(index : Int){
         mSortedList.removeItemAt(index)
