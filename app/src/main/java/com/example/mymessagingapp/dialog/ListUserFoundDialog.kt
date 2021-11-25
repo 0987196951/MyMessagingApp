@@ -18,10 +18,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.mymessagingapp.R
-import com.example.mymessagingapp.CONSTANT
-import com.example.mymessagingapp.ChatFragment
-import com.example.mymessagingapp.ChatListFragment
+import com.example.mymessagingapp.*
 import com.example.mymessagingapp.data.User
 import com.example.mymessagingapp.interfaces.CallBackAddUserToGroup
 import com.example.mymessagingapp.interfaces.CallBackFromListUserFound
@@ -84,7 +81,7 @@ class ListUserFoundDialog : DialogFragment() {
         private val nameOtherFound = view.findViewById(R.id.nameUserFound) as TextView
         fun bind(user : User){
             this.user = user
-            //imageOtherUser.setImageBitmap(getImage(user.image))
+            imageOtherUser.setImageBitmap(getImage(user.image))
             nameOtherFound.text = user.name
         }
         init {
@@ -96,7 +93,7 @@ class ListUserFoundDialog : DialogFragment() {
                         Log.d(TAG, "fragment adjust called is Chat List Fragment")
                         (fragment as CallBackFromListUserFound).onUserFound(user)
                 }
-                else if(fragment is ChatFragment) {
+                else if(fragment is MoreInfoGroup) {
                     Log.d(TAG, "fragment adjust called is Chat Fragment")
                     MaterialAlertDialogBuilder(context!!)
                         .setMessage("Are you sure add ${user.name} into this group")

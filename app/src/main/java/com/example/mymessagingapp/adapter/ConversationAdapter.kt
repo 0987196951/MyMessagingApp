@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,12 +17,14 @@ import com.example.mymessagingapp.R
 import com.example.mymessagingapp.data.Conversation
 import com.example.mymessagingapp.data.User
 import com.example.mymessagingapp.interfaces.CallBackFromChatList
+import com.example.mymessagingapp.utilities.Inites
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-
+private const val TAG = "ConversationAdapter"
 class  ConversationAdapter(private var user: User, private var list: List<Conversation>, var context: Context, var layoutInflater: LayoutInflater) :
     RecyclerView.Adapter<ConversationAdapter.ConversationHolder>() {
     val db = Firebase.firestore
+    private var mId : HashMap<String, Conversation> = hashMapOf()
     private var callback : CallBackFromChatList
     private var mSortedList : SortedList<Conversation> =
         SortedList(Conversation::class.java, SortedListConversationAdapter(this));
@@ -41,22 +44,34 @@ class  ConversationAdapter(private var user: User, private var list: List<Conver
         fun bind(conversation : Conversation){
             this.conversation = conversation
             chatListLastMessage.text = conversation.senderName + " : " + conversation.content
+            if(conversation.senderName.isEmpty()) chatListLastMessage.visibility = View.GONE
             chatListNameGroup.text = conversation.groupName
+            chatListImageGroup.setImageBitmap(Inites.getImage(conversation.imageGroup))
+            Log.d(TAG, "conversation id : " + conversation.groupId)
         }
-        private fun getGroupImage(encodeImage : String) : Bitmap{
-            val bytes = Base64.decode(encodeImage, Base64.DEFAULT)
-            return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-        }
-
         override fun onClick(view : View?) {
             (context as CallBackFromChatList).onGroupSelected(conversation.groupId)
         }
     }
     fun addConversation(con : Conversation){
-        mSortedList.add(con)
+        var con1 = mId.get(con.groupId)
+        if(con1 == null){
+            mSortedList.add(con)
+            mId.put(con.groupId, con)
+        }
+        else {
+            mSortedList.updateItemAt(mSortedList.indexOf(con1), con)
+        }
     }
     fun removeConversation(con : Conversation){
-        mSortedList.remove(con)
+        var con1 = mId.get(con.groupId)
+        if(con1 == null){
+            mSortedList.add(con)
+            mId.put(con.groupId, con)
+        }
+        else {
+            mSortedList.removeItemAt(mSortedList.indexOf(con1))
+        }
     }
     fun removeConversationAt(index : Int){
         mSortedList.removeItemAt(index)

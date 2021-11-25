@@ -30,5 +30,8 @@
     <string name="make_a_group">make a group</string>
     <string name="log_out">Log out</string>
     <string name="accept_modify">accept</string>
+    <string name="list_member">list member</string>
+    <string name="add_member">add member</string>
+    <string name="out_group">out group</string>
 
 </resources>

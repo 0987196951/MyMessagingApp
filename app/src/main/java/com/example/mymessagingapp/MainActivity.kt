@@ -1,8 +1,10 @@
 package com.example.mymessagingapp
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.fragment.app.FragmentManager
 import com.example.mymessagingapp.data.Group
 import com.example.mymessagingapp.data.User
 import com.example.mymessagingapp.interfaces.*
@@ -15,7 +17,8 @@ import com.google.firebase.ktx.Firebase
 import java.util.*
 private val TAG = "MainActivity"
 class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFromMakeGroup, CallBackFromChatList,
-    CallBackWhenSeeInfoUser, CallBackWhenAutoLoginSuccess, CallBackWhenLoginNotSuccess, CallBackWhenModifyDataUser {
+    CallBackWhenSeeInfoUser, CallBackWhenLoginSuccess, CallBackWhenLoginAutoNotSuccess, CallBackWhenModifyDataUser,
+    CallBackWhenOutGroup, CallBackWhenSeeMoreInfoGroup,CallBackWhenLogOut, CallBackWhenSignUp {
     private lateinit var user : User
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,26 +26,31 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFro
         val currentFragment =supportFragmentManager.findFragmentById(R.id.fragment_container)
         if(currentFragment == null){
             val loadingDataUser = LoadingDataUser.newInstance()
-            supportFragmentManager.beginTransaction().add(R.id.fragment_container, loadingDataUser).commit()
-        }
-        /*if(currentFragment == null){
-            val signUpFragment = SignUpFragment.newInstance()
-            supportFragmentManager.beginTransaction().add(R.id.fragment_container, signUpFragment)
+            val signInFragment = SignInFragment.newInstance()
+            supportFragmentManager.beginTransaction().add(R.id.fragment_container, signInFragment)
+            supportFragmentManager.beginTransaction().replace(R.id.fragment_container, loadingDataUser)
+                .addToBackStack(null)
                 .commit()
-        }*/
+        }
     }
-    override fun onLogin(user : User) {
+    override fun onLoginSuccess(user : User, pos : Int) {
         this.user = user
-        Log.d(TAG, "" + user.accountCreate)
+        Log.d(TAG, "" + user)
         val chatListFragment = ChatListFragment.newInstance(user)
-        supportFragmentManager.beginTransaction()
+        if(pos == 1 ) supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, chatListFragment).addToBackStack(null).commit()
+        else supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, chatListFragment).commit()
     }
     override fun onSignIn() {
-       // val currentFragment =supportFragmentManager.findFragmentById(R.id.fragment_container)
-        val chatListFragment = ChatListFragment.newInstance(user)
+        val signInFragment = SignInFragment.newInstance()
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, signInFragment)
+                 .commit()
+    }
+    override fun onSignUp() {
+        val signUpFragment = SignUpFragment.newInstance()
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, chatListFragment).addToBackStack(null).commit()
+            .replace(R.id.fragment_container, signUpFragment).addToBackStack(null).commit()
     }
     override fun onUserFound(userFound: User) {
         Log.d(TAG, "call back onUserFound in Main userFound id ${userFound.userId}")
@@ -56,7 +64,8 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFro
             override fun callBackGroupNotExist() {
                 Log.d(TAG, "call back group didn't existed")
                 val group = Group(UUID.randomUUID().toString(),
-                    userFound.name, Date(),  false, CONSTANT.IMAGE_DEFAULT)
+                    userFound.name, Date(),  false,
+                    userFound.image)
                 val hashGroup = mapOf(
                     CONSTANT.KEY_GROUP_ID to group.groupId,
                     CONSTANT.KEY_GROUP_NAME to group.nameGroup,
@@ -77,7 +86,8 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFro
                 userRef.document(user.userId).update(CONSTANT.KEY_USER_LIST_GROUP_ID, FieldValue.arrayUnion(group.groupId))
                 userRef.document(userFound.userId).update(CONSTANT.KEY_USER_LIST_GROUP_ID, FieldValue.arrayUnion(group.groupId))
                 val chatFragment = ChatFragment.newInstance(user, group)
-                supportFragmentManager.beginTransaction().replace(R.id.fragment_container, chatFragment).addToBackStack(null).commit()
+                supportFragmentManager.beginTransaction().replace(R.id.fragment_container, chatFragment)
+                    .addToBackStack(null).commit()
             }
         }
        checkGroupIsExist(userFound, callback)
@@ -171,5 +181,35 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFro
         val modifyDataUser = ModifyInfoUserFragment.newInstance(user)
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container, modifyDataUser)
             .addToBackStack(null).commit()
+    }
+
+    override fun outGroup(group : Group) {
+        Log.d(TAG, "out group")
+        val db = Firebase.firestore
+        db.collection(CONSTANT.KEY_USER).document(user.userId)
+            .update(CONSTANT.KEY_USER_LIST_GROUP_ID, FieldValue.arrayRemove(group.groupId))
+        db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
+            .update(CONSTANT.KEY_GROUP_LIST_MEMBER, FieldValue.arrayRemove(user.userId))
+            supportFragmentManager.popBackStack()
+            supportFragmentManager.popBackStack()
+    }
+
+    override fun seeForInfoGroup(group : Group) {
+        val fragment = MoreInfoGroup.newInstance(group, user)
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment)
+            .addToBackStack(null).commit()
+    }
+
+    override fun onLogout() {
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        val signInFragment = SignInFragment.newInstance()
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, signInFragment)
+            .commit()
+        val fileName = "myaccount.txt"
+        this.openFileOutput(fileName, Context.MODE_PRIVATE).use{
+            it?.write("".toByteArray())
+        }
     }
 }

@@ -10,6 +10,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObjects
 import com.google.firebase.ktx.Firebase
+import java.util.*
 
 class FindOtherUserViewModel(private val key_find : String) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -47,10 +48,10 @@ class FindOtherUserViewModel(private val key_find : String) : ViewModelProvider.
                     for(doc in values){
                         listOtherUser.value?.add(User(doc.data[CONSTANT.KEY_USER_ID] as  String,
                             doc.data[CONSTANT.KEY_USER_NAME] as  String,
-                            doc.data[CONSTANT.KEY_USER_PASSWORD] as String,
-                            doc.data[CONSTANT.KEY_USER_GMAIL] as String,
-                            Inites.convertTimeStampToDate(doc.data[CONSTANT.KEY_USER_DATE_OF_BIRTH] as Timestamp),
-                            Inites.convertTimeStampToDate(doc.data[CONSTANT.KEY_USER_CREATE_ACCOUNT] as Timestamp),
+                            "",
+                            "",
+                            Date(),
+                            Date(),
                             doc.data[CONSTANT.KEY_USER_IMAGE] as String,
                             false
                         ))

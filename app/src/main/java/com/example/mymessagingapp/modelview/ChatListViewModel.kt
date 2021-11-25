@@ -48,20 +48,26 @@ class ChatListViewModelFactory(
                             if( doc.type == DocumentChange.Type.MODIFIED || doc.type == DocumentChange.Type.ADDED){
                                 var mapConversation = doc.document[CONSTANT.KEY_CONVERSATION] as Map<* , *>
                                 var groupId = doc.document[CONSTANT.KEY_GROUP_ID] as String
+                                Log.d(TAG, "conversation change " + groupId)
                                 conversationAdapter.value?.addConversation(Conversation(mapConversation[CONSTANT.KEY_CONVERSATION_SENDER_NAME] as String,
                                     mapConversation[CONSTANT.KEY_CONVERSATION_CONTENT] as String,
                                     Inites.convertTimeStampToDate(mapConversation[CONSTANT.KEY_CONVERSATION_TIME_SEND] as Timestamp),
                                     groupId,
-                                    doc.document.get(CONSTANT.KEY_GROUP_NAME) as String))
+                                    doc.document.get(CONSTANT.KEY_GROUP_NAME) as String,
+                                    doc.document.get(CONSTANT.KEY_GROUP_IMAGE) as String
+                                ))
                             }
                             else if(doc.type == DocumentChange.Type.REMOVED){
+                                Log.d(TAG, "conversation remove")
                                 var mapConversation = doc.document[CONSTANT.KEY_CONVERSATION] as Map<* , *>
                                 var groupId = doc.document[CONSTANT.KEY_GROUP_ID] as String
                                 conversationAdapter.value?.removeConversation(Conversation(mapConversation[CONSTANT.KEY_CONVERSATION_SENDER_NAME] as String,
                                     mapConversation[CONSTANT.KEY_CONVERSATION_CONTENT] as String,
                                     Inites.convertTimeStampToDate(mapConversation[CONSTANT.KEY_CONVERSATION_TIME_SEND] as Timestamp),
                                     groupId,
-                                    doc.document.get(CONSTANT.KEY_GROUP_NAME) as String))
+                                    doc.document.get(CONSTANT.KEY_GROUP_NAME) as String,
+                                    doc.document.get(CONSTANT.KEY_GROUP_IMAGE) as String
+                                ))
                             }
                         }
                         conversationAdapter.notifyObserver()
@@ -78,7 +84,9 @@ class ChatListViewModelFactory(
             mapConversation[CONSTANT.KEY_CONVERSATION_CONTENT] as String,
             Inites.convertTimeStampToDate(mapConversation[CONSTANT.KEY_CONVERSATION_TIME_SEND] as Timestamp),
             groupId,
-            snapShot.data?.get(CONSTANT.KEY_GROUP_NAME) as String)
+            snapShot.data?.get(CONSTANT.KEY_GROUP_NAME) as String,
+            snapShot.data?.get(CONSTANT.KEY_GROUP_IMAGE) as String
+        )
     }
     fun <T> MutableLiveData<T>.notifyObserver() {
         this.value = this.value

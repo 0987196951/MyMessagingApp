@@ -18,6 +18,7 @@ import com.example.mymessagingapp.data.Group
 import com.example.mymessagingapp.data.User
 import com.example.mymessagingapp.dialog.ListUserFoundDialog
 import com.example.mymessagingapp.interfaces.CallBackAddUserToGroup
+import com.example.mymessagingapp.interfaces.CallBackWhenSeeMoreInfoGroup
 import com.example.mymessagingapp.modelview.ChatViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.firestore.FieldValue
@@ -26,14 +27,12 @@ import com.google.firebase.ktx.Firebase
 import java.util.*
 import java.util.concurrent.Executors
 private val TAG = "ChatFragmentListener"
-private val REQUEST_FIND_OTHER_USER = 1
-private val DIALOG_FIND_OTHER_USER = "DialogFindOtherUser"
-class ChatFragment : Fragment(), CallBackAddUserToGroup {
+class ChatFragment : Fragment(){
     private lateinit var user : User
     private lateinit var group : Group 
     private lateinit var nameReceiver : TextView
     private lateinit var imageReceiver : ImageView
-    private lateinit var addOtherButton : Button
+    private lateinit var moreInfo : ImageButton
     private lateinit var messageRecyclerView: RecyclerView
     private lateinit var sendingMessage : EditText
     private lateinit var sendingMessageButton : Button
@@ -54,7 +53,7 @@ class ChatFragment : Fragment(), CallBackAddUserToGroup {
         val view = inflater.inflate(R.layout.chat_message, container, false)
         nameReceiver = view.findViewById(R.id.nameReceiverChatMessage) as TextView
         imageReceiver = view.findViewById(R.id.imageReceiverChatMessage) as ImageView
-        addOtherButton = view.findViewById(R.id.addOtherUser) as Button
+        moreInfo = view.findViewById(R.id.moreInfoGroup) as ImageButton
         messageRecyclerView = view.findViewById(R.id.chatListRecyclerView) as RecyclerView
         var linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.reverseLayout = false
@@ -68,7 +67,7 @@ class ChatFragment : Fragment(), CallBackAddUserToGroup {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         nameReceiver.text = group.nameGroup
-        //imageReceiver.setImageBitmap(getImage(group.imageGroup))
+        imageReceiver.setImageBitmap(getImage(group.imageGroup))
         adapter = chatViewModel.listMessage.value?.let { ChatRecyclerAdapter(it) }!!
         chatViewModel.listMessage.observe(
             viewLifecycleOwner,
@@ -84,34 +83,14 @@ class ChatFragment : Fragment(), CallBackAddUserToGroup {
 
     override fun onStart() {
         super.onStart()
-        /*val sendPlace = object :TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onTextChanged(sequence: CharSequence, p1: Int, p2: Int, p3: Int) {
-                val s = sequence.toString()
-                addNewConversation(s)
-                addNewMessage(s)
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-                TODO("Not yet implemented")
-            }
-
-        }
-        sendingMessage.addTextChangedListener(sendPlace)*/
         sendingMessageButton.setOnClickListener { v ->
-            val s = sendingMessage.text.toString()
+            val s = sendingMessage.text.toString().trim()
             sendingMessage.text.clear()
             addNewMessage(s)
         }
-        addOtherButton.setOnClickListener { v ->
-            ListUserFoundDialog.newInstance("").apply {
-                setTargetFragment(this@ChatFragment, REQUEST_FIND_OTHER_USER).apply {
-                    show(this@ChatFragment.requireFragmentManager(), DIALOG_FIND_OTHER_USER)
-                }
-            }
+        moreInfo.setOnClickListener { v ->
+            (requireContext() as CallBackWhenSeeMoreInfoGroup).seeForInfoGroup(group)
+
         }
     }
     private inner class ChatHolder(var view : View) : RecyclerView.ViewHolder(view) {
@@ -132,14 +111,14 @@ class ChatFragment : Fragment(), CallBackAddUserToGroup {
             if(viewType == CONSTANT.VIEW_TYPE_RECEIVED_MESSAGE){
                 Firebase.firestore.collection(CONSTANT.KEY_USER).document(message.senderId)
                     .get().addOnSuccessListener { value ->
-                        //val image = value.getString(CONSTANT.KEY_USER_IMAGE)
-                        //imageMessage.setImageBitmap(image?.let { getImage(it) })
+                        val image = value.getString(CONSTANT.KEY_USER_IMAGE)
+                        imageMessage.setImageBitmap(image?.let { getImage(it) })
                     }.addOnFailureListener { e ->
                         Log.d("Chat Fragment", "" + e.printStackTrace())
                     }
             }
             else {
-                  //imageMessage.setImageBitmap(getImage(user.image))
+                  imageMessage.setImageBitmap(getImage(user.image))
             }
             contentMessage.text = message.message
             timeMessage.text = message.timeMessage.toString()
@@ -212,45 +191,5 @@ class ChatFragment : Fragment(), CallBackAddUserToGroup {
             CONSTANT.KEY_MESSAGE_TIME_SEND to Date()
         )
         Firebase.firestore.collection(CONSTANT.KEY_GROUP).document(group.groupId).collection(CONSTANT.KEY_MESSAGE).add(messageMap)
-    }
-
-    override fun onAddOtherUserToGroup(userAdded: User) {
-        val db = Firebase.firestore
-        db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
-            .get()
-            .addOnSuccessListener { value ->
-                if(value != null){
-                    var check = true
-                    val listMember = value.data?.get(CONSTANT.KEY_GROUP_LIST_MEMBER) as List<String>
-                    for (i in listMember){
-                        if(i == userAdded.userId){
-                            check = false
-                            break
-                        }
-                    }
-                    if(check == true){
-                        val hashNewMessage = mapOf(
-                                CONSTANT.KEY_MESSAGE_SENDER_NAME to "system",
-                                CONSTANT.KEY_MESSAGE_CONTENT to "${user.name} is ${userAdded.name} into this group",
-                                CONSTANT.KEY_MESSAGE_TIME_SEND to Date(),
-                                CONSTANT.KEY_MESSAGE_SENDER_ID to CONSTANT.KEY_MESSAGE_SYSTEM_ID
-                        )
-                        db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
-                            .update(CONSTANT.KEY_GROUP_LIST_MEMBER, FieldValue.arrayUnion(userAdded.userId))
-                        db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
-                            .collection(CONSTANT.KEY_MESSAGE).add(hashNewMessage)
-                        db.collection(CONSTANT.KEY_USER_LIST_GROUP_ID).document(user.userId)
-                            .update(CONSTANT.KEY_USER_LIST_GROUP_ID, FieldValue.arrayUnion(group.groupId))
-                        MaterialAlertDialogBuilder(requireContext())
-                            .setMessage("you added ${userAdded.name} into this group")
-                            .show()
-                    }
-                    else {
-                        MaterialAlertDialogBuilder(requireContext())
-                            .setMessage("${userAdded.name} are in this group")
-                            .show()
-                    }
-                }
-            }
     }
 }

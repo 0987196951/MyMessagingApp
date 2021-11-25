@@ -62,7 +62,7 @@ class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvide
                             if(check == false) {
                                 continue
                             }
-                            if(!senderId.equals(CONSTANT.KEY_MESSAGE_SYSTEM_ID)){
+                            if(senderId != CONSTANT.KEY_MESSAGE_SYSTEM_ID){
                                 db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
                                     .update(mapOf(
                                         CONSTANT.KEY_CONVERSATION to mapOf(

@@ -1,8 +1,9 @@
 package com.example.mymessagingapp.adapter
 
+import android.util.Log
 import androidx.recyclerview.widget.SortedListAdapterCallback
 import com.example.mymessagingapp.data.Conversation
-
+private const val TAG = "SortedListConversation"
 class SortedListConversationAdapter(adapter: ConversationAdapter) : SortedListAdapterCallback<Conversation>( adapter) {
     override fun compare(con1 : Conversation?, con2: Conversation?): Int {
             return -con1!!.timeSend.compareTo(con2!!.timeSend)
@@ -13,6 +14,7 @@ class SortedListConversationAdapter(adapter: ConversationAdapter) : SortedListAd
     }
 
     override fun areItemsTheSame(item1: Conversation?, item2: Conversation?): Boolean {
+        Log.d(TAG, "${item1?.groupId} vs ${item2?.groupId}" + item1?.groupId.equals(item2?.groupId))
         return item1?.groupId.equals(item2?.groupId)
     }
 }

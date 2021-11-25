@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import com.example.mymessagingapp.interfaces.CallBackWhenCheckInvalidSignUpOrModifyInfo
+import com.example.mymessagingapp.interfaces.CallBackWhenLoginAutoNotSuccess
 import com.example.mymessagingapp.utilities.Inites
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -109,7 +110,7 @@ class SignUpFragment : Fragment() {
             .document(userId).set(user)
             .addOnSuccessListener { value ->
                 loading(false)
-                onDestroy()
+                (requireContext() as CallBackWhenLoginAutoNotSuccess).onSignIn()
             }
             .addOnFailureListener { exception: Exception ->
                 loading(false)
@@ -132,7 +133,7 @@ class SignUpFragment : Fragment() {
             return
         Log.d(TAG, "alo alo")
         if (requestCode == RESULT_OK && data != null) {
-            val imageUri = data!!.data
+            val imageUri = data.data
             try {
                 val inputStream = requireActivity().contentResolver.openInputStream(imageUri!!)
                 val bitmap = BitmapFactory.decodeStream(inputStream)

@@ -1,37 +1,29 @@
 package com.example.mymessagingapp.dialog
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Base64
 import android.util.Log
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Toast
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.*
 import androidx.fragment.app.DialogFragment
-import com.example.mymessagingapp.R
 import com.example.mymessagingapp.CONSTANT
+import com.example.mymessagingapp.R
 import com.example.mymessagingapp.data.Group
 import com.example.mymessagingapp.data.User
 import com.example.mymessagingapp.interfaces.CallBackFromMakeGroup
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import java.io.ByteArrayOutputStream
+import com.example.mymessagingapp.utilities.Inites
 import java.io.FileNotFoundException
 import java.util.*
 
-private val REQUEST_CODE_IMAGE = 1
-private val TAG = "MakeGroupDialog"
+private const val REQUEST_OK= 1
+private const val TAG = "MakeGroupDialog"
 class MakeGroupDialog : DialogFragment() {
     private lateinit var imageGroup : ImageView
+    private lateinit var addImage : TextView
     private lateinit var enterNameGroup : EditText
     private var encodedImage : String? = null
     private lateinit var exit : Button
@@ -45,22 +37,23 @@ class MakeGroupDialog : DialogFragment() {
             builder.setView(view)
             this.user = arguments?.getSerializable(CONSTANT.KEY_USER) as User
             imageGroup = view.findViewById(R.id.imageGroupAdded) as ImageView
+            enterNameGroup = view.findViewById(R.id.enterNameGroup) as EditText
+            exit = view.findViewById(R.id.exitMakeGroup) as Button
+            accept = view.findViewById(R.id.acceptMakeGroup) as Button
+            addImage = view.findViewById(R.id.textAddImageGroup) as TextView
             imageGroup.setOnClickListener {v ->
                 val intent =
                     Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-               pickImage.launch(intent)
+                startActivityForResult(intent, REQUEST_OK)
             }
-            enterNameGroup = view.findViewById(R.id.enterNameGroup) as EditText
-            exit = view.findViewById(R.id.exitMakeGroup) as Button
-            accept = view.findViewById(R.id.acceptMakeGroup) as Button
             accept.setOnClickListener{ v ->
                 if(checkValidMakeGroup()){
                     val group = Group(UUID.randomUUID().toString(),
                         enterNameGroup.text.toString(),
                         Date(),
                         true,
-                        encodedImage?:CONSTANT.IMAGE_DEFAULT
+                        encodedImage?:Inites.encodeImage(BitmapFactory.decodeResource(resources, R.drawable.groupimage))
                     )
                     targetFragment.let { fragment ->
                         (fragment as CallBackFromMakeGroup).onMadeGroup(group)
@@ -68,30 +61,25 @@ class MakeGroupDialog : DialogFragment() {
                     dialog?.dismiss()
                 }
             }
+            exit.setOnClickListener{
+                dialog?.dismiss()
+            }
             builder.create()
         }?: throw IllegalStateException("can't ")
     }
-    private fun encodeImage(bitmap: Bitmap): String {
-        val previewWidth = 150
-        val previewHeight = bitmap.height * previewWidth / bitmap.width
-        val previewBitmap = Bitmap.createScaledBitmap(bitmap, previewWidth, previewHeight, false)
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        previewBitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)
-        val bytes = byteArrayOutputStream.toByteArray()
-        return Base64.encodeToString(bytes, Base64.DEFAULT)
-    }
-    private val pickImage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-        if (result.resultCode == AppCompatActivity.RESULT_OK) {
-            if (result.data != null) {
-                val imageUri = result.data!!.data
-                try {
-                    val inputStream = context?.contentResolver?.openInputStream(imageUri!!)
-                    val bitmap = BitmapFactory.decodeStream(inputStream)
-                    imageGroup.setImageBitmap(bitmap)
-                    encodedImage = encodeImage(bitmap)
-                } catch (e: FileNotFoundException) {
-                    e.printStackTrace()
-                }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode != Activity.RESULT_OK)
+            return
+        if (requestCode == REQUEST_OK && data != null) {
+            val imageUri = data!!.data
+            try {
+                val inputStream = requireActivity().contentResolver.openInputStream(imageUri!!)
+                val bitmap = BitmapFactory.decodeStream(inputStream)
+                imageGroup.setImageBitmap(bitmap)
+                encodedImage = Inites.encodeImage(bitmap)
+                Log.d(TAG, "encode Image is : " + encodedImage)
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
             }
         }
     }

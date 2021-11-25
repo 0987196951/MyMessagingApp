@@ -1,7 +1,6 @@
 package com.example.mymessagingapp
 
 import android.content.Context
-import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,11 +9,12 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import com.example.mymessagingapp.data.User
-import com.example.mymessagingapp.interfaces.CallBackWhenAutoLoginSuccess
-import com.example.mymessagingapp.interfaces.CallBackWhenLoginNotSuccess
+import com.example.mymessagingapp.interfaces.CallBackWhenLoginSuccess
+import com.example.mymessagingapp.interfaces.CallBackWhenLoginAutoNotSuccess
 import com.example.mymessagingapp.utilities.Inites
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.io.FileInputStream
 
 private const val TAG = "LoadingDataUser"
 class LoadingDataUser : Fragment() {
@@ -39,7 +39,13 @@ class LoadingDataUser : Fragment() {
         progress.visibility = View.VISIBLE
         lateinit var gmail : String
         lateinit var password : String
-        var fileInput = context?.openFileInput(fileName)
+        var fileInput : FileInputStream? = null
+        try {
+            fileInput = context?.openFileInput(fileName)
+        }catch (e : Exception){
+            (requireContext() as CallBackWhenLoginAutoNotSuccess).onSignIn()
+            return
+        }
         //Log.d(TAG, "file name $fileName" + fileInput?.available())
         if(fileInput?.available()!! > 0){
             context?.openFileInput(fileName)?.bufferedReader()?.useLines {  lines ->
@@ -57,17 +63,17 @@ class LoadingDataUser : Fragment() {
                         for (doc in value.documents){
                             user = Inites.getUser(doc)
                         }
-                        (requireContext() as CallBackWhenAutoLoginSuccess).onLogin(user)
+                        (requireContext() as CallBackWhenLoginSuccess).onLoginSuccess(user, 2)
                         progress.visibility = View.GONE
                     }
                     else {
-                        (requireContext() as CallBackWhenLoginNotSuccess).onSignIn()
+                        (requireContext() as CallBackWhenLoginAutoNotSuccess).onSignIn()
                     }
                 }
         }
         else {
                 //Log.d(TAG, "Can\'t open file")
-            (requireContext() as CallBackWhenLoginNotSuccess).onSignIn()
+            (requireContext() as CallBackWhenLoginAutoNotSuccess).onSignIn()
         }
     }
     companion object {
@@ -75,10 +81,5 @@ class LoadingDataUser : Fragment() {
             return LoadingDataUser()
         }
     }
-    fun writeData(){
-        context?.openFileOutput(fileName, Context.MODE_PRIVATE).use{
-            it?.write("dmcsncc19@gmail.com\n".toByteArray())
-            it?.write("123456".toByteArray())
-        }
-    }
+
 }

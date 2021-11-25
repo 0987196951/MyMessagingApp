@@ -1,5 +1,5 @@
 package com.example.mymessagingapp.interfaces
 
-interface CallBackWhenLoginNotSuccess {
+interface CallBackWhenLoginAutoNotSuccess {
     fun onSignIn()
 }
