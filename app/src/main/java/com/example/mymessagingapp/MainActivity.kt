@@ -110,8 +110,7 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFro
                 CONSTANT.KEY_MESSAGE_SENDER_NAME to "system",
                 CONSTANT.KEY_MESSAGE_CONTENT to "${user.name} is made group",
                 CONSTANT.KEY_MESSAGE_TIME_SEND to Date(),
-                CONSTANT.KEY_MESSAGE_SENDER_ID to CONSTANT.KEY_MESSAGE_SYSTEM_ID,
-                CONSTANT.KEY_MESSAGE_IMAGE_SENDER to ""
+                CONSTANT.KEY_MESSAGE_SENDER_ID to CONSTANT.KEY_MESSAGE_SYSTEM_ID
         )
         val db= Firebase.firestore
         db.collection(CONSTANT.KEY_GROUP).document(group.groupId).set(hashGroup)

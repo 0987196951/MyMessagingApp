@@ -46,7 +46,7 @@ class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvide
         val db = Firebase.firestore
         db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
             .collection(CONSTANT.KEY_MESSAGE)
-            .addSnapshotListener(MetadataChanges.INCLUDE) { value, e ->
+            .addSnapshotListener { value, e ->
                 if(e != null) {
                     return@addSnapshotListener
                 }
@@ -58,9 +58,8 @@ class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvide
                             val senderId = doc.document.getString(CONSTANT.KEY_MESSAGE_SENDER_ID) as String
                             val message = doc.document.getString(CONSTANT.KEY_MESSAGE_CONTENT) as String
                             val timeMessage = Inites.convertTimeStampToDate(doc.document[CONSTANT.KEY_MESSAGE_TIME_SEND] as Timestamp)
-                            val imageSender = doc.document.get(CONSTANT.KEY_MESSAGE_IMAGE_SENDER) as String
-                            listMessage.value?.add(ChatMessage(senderId, message, timeMessage, senderName, imageSender))
-                            if(check == false) {
+                            listMessage.value?.add(ChatMessage(senderId, message, timeMessage, senderName))
+                            if(!check) {
                                 continue
                             }
                             if(senderId != CONSTANT.KEY_MESSAGE_SYSTEM_ID){

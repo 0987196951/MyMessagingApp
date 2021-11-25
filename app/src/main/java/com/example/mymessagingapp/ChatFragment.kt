@@ -112,8 +112,13 @@ class ChatFragment : Fragment(){
             contentMessage = view.findViewById(R.id.contentMessage) as TextView
             timeMessage = view.findViewById(R.id.timeMessage) as TextView
             if(viewType == CONSTANT.VIEW_TYPE_RECEIVED_MESSAGE){
-                        val image = chat.senderImage
-                        imageMessage.setImageBitmap(getImage(image))
+                Firebase.firestore.collection(CONSTANT.KEY_USER).document(chat.senderId)
+                    .get().addOnSuccessListener { value ->
+                        if(value != null){
+                            val imageUser = value.data?.get(CONSTANT.KEY_USER_IMAGE) as String
+                            imageMessage.setImageBitmap(getImage(imageUser))
+                        }
+                    }
             }
             else {
                   imageMessage.setImageBitmap(getImage(user.image))
@@ -186,8 +191,7 @@ class ChatFragment : Fragment(){
             CONSTANT.KEY_MESSAGE_SENDER_NAME to user.name,
             CONSTANT.KEY_MESSAGE_SENDER_ID to user.userId,
             CONSTANT.KEY_MESSAGE_CONTENT to message,
-            CONSTANT.KEY_MESSAGE_TIME_SEND to Date(),
-            CONSTANT.KEY_MESSAGE_IMAGE_SENDER to user.image
+            CONSTANT.KEY_MESSAGE_TIME_SEND to Date()
         )
         Firebase.firestore.collection(CONSTANT.KEY_GROUP).document(group.groupId).collection(CONSTANT.KEY_MESSAGE).add(messageMap)
     }
