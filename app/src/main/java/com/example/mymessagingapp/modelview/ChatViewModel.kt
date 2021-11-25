@@ -58,7 +58,8 @@ class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvide
                             val senderId = doc.document.getString(CONSTANT.KEY_MESSAGE_SENDER_ID) as String
                             val message = doc.document.getString(CONSTANT.KEY_MESSAGE_CONTENT) as String
                             val timeMessage = Inites.convertTimeStampToDate(doc.document[CONSTANT.KEY_MESSAGE_TIME_SEND] as Timestamp)
-                            listMessage.value?.add(ChatMessage(senderId, message, timeMessage, senderName))
+                            val imageSender = doc.document.get(CONSTANT.KEY_MESSAGE_IMAGE_SENDER) as String
+                            listMessage.value?.add(ChatMessage(senderId, message, timeMessage, senderName, imageSender))
                             if(check == false) {
                                 continue
                             }

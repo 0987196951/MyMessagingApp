@@ -35,6 +35,7 @@ class CONSTANT {
         const val KEY_MESSAGE_CONTENT = "content"
         const val KEY_MESSAGE_SYSTEM_ID = "1111"
         const val KEY_MESSAGE_SENDER_NAME = "sender_name"
+        const val KEY_MESSAGE_IMAGE_SENDER = "image_sender"
 
         const val VIEW_TYPE_SEND_MESSAGE = 0
         const val VIEW_TYPE_RECEIVED_MESSAGE = 1

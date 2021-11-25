@@ -119,7 +119,8 @@ class MoreInfoGroup : Fragment(), CallBackWhenSelectOtherUserInGroup, CallBackAd
                             CONSTANT.KEY_MESSAGE_SENDER_NAME to "system",
                             CONSTANT.KEY_MESSAGE_CONTENT to "${user.name} is ${userAdded.name} into this group",
                             CONSTANT.KEY_MESSAGE_TIME_SEND to Date(),
-                            CONSTANT.KEY_MESSAGE_SENDER_ID to CONSTANT.KEY_MESSAGE_SYSTEM_ID
+                            CONSTANT.KEY_MESSAGE_SENDER_ID to CONSTANT.KEY_MESSAGE_SYSTEM_ID,
+                            CONSTANT.KEY_MESSAGE_IMAGE_SENDER to ""
                         )
                         db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
                             .update(CONSTANT.KEY_GROUP_LIST_MEMBER, FieldValue.arrayUnion(userAdded.userId))
