@@ -30,7 +30,6 @@ private val RESULT_OK = 1
 private val TAG = "SignUpFragment"
 class SignUpFragment : Fragment() {
     private var encodedImage: String? = null
-    private lateinit var preferenceManager: PreferenceManager
     private lateinit var imageProfile : ImageView
     private lateinit var textAddImage : TextView
     private lateinit var inputName : EditText
@@ -40,9 +39,6 @@ class SignUpFragment : Fragment() {
     private lateinit var inputConfirmPassword : EditText
     private lateinit var buttonSignUp : Button
     private lateinit var progressBar : ProgressBar
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
