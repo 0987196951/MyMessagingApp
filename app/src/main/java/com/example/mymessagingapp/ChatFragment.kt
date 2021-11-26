@@ -102,12 +102,12 @@ class ChatFragment : Fragment(){
 
     private class NoteDiffCallBack : DiffUtil.ItemCallback<ChatMessage>(){
         override fun areItemsTheSame(oldItem: ChatMessage, newItem: ChatMessage): Boolean {
-            Log.d(TAG, "old : $oldItem new $newItem")
+            //Log.d(TAG, "old : $oldItem new $newItem")
             return oldItem.senderId == newItem.senderId && oldItem.timeMessage == newItem.timeMessage
         }
 
         override fun areContentsTheSame(oldItem: ChatMessage, newItem: ChatMessage): Boolean {
-            Log.d(TAG, "old : $oldItem new $newItem")
+            //Log.d(TAG, "old : $oldItem new $newItem")
             return oldItem == newItem
         }
 
