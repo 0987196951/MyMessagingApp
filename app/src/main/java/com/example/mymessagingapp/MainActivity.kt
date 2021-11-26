@@ -4,16 +4,19 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.fragment.app.FragmentManager
 import com.example.mymessagingapp.data.Group
 import com.example.mymessagingapp.data.User
 import com.example.mymessagingapp.interfaces.*
 import com.example.mymessagingapp.utilities.Inites
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import java.util.*
 private val TAG = "MainActivity"
 class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFromMakeGroup, CallBackFromChatList,
@@ -35,7 +38,14 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFro
     }
     override fun onLoginSuccess(user : User, pos : Int) {
         this.user = user
-        Log.d(TAG, "" + user)
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+            val token = task.result//ecDf8P2BQousElA_bSocSG:APA91bE4htWRI5CHW0c9j5lBEOSrtCfnK46lb3nThPIfKq3vlCXJtuROEb7Emjw_v2S2HhFhEKie9qpFXpwiNS6W8sh4ZQtlxopbsxv-N9rTBBORruF3Bl2GfuPLuaaX56Hrw827ozxD
+            Log.d(TAG, "" + token)
+        })
         val chatListFragment = ChatListFragment.newInstance(user)
         if(pos == 1 ) supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, chatListFragment).addToBackStack(null).commit()

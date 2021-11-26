@@ -33,5 +33,6 @@
     <string name="list_member">list member</string>
     <string name="add_member">add member</string>
     <string name="out_group">out group</string>
+    <string name="msg_token_fmt">fcm_token_mesage</string>
 
 </resources>
