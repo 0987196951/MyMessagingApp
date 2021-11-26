@@ -47,7 +47,6 @@ class  ConversationAdapter(private var user: User, private var list: List<Conver
             if(conversation.senderName.isEmpty()) chatListLastMessage.visibility = View.GONE
             chatListNameGroup.text = conversation.groupName
             chatListImageGroup.setImageBitmap(Inites.getImage(conversation.imageGroup))
-            Log.d(TAG, "conversation id : " + conversation.groupId)
         }
         override fun onClick(view : View?) {
             (context as CallBackFromChatList).onGroupSelected(conversation.groupId)

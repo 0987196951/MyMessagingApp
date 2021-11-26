@@ -26,6 +26,9 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.*
 import java.util.concurrent.Executors
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+
 private val TAG = "ChatFragmentListener"
 class ChatFragment : Fragment(){
     private lateinit var user : User
@@ -71,14 +74,15 @@ class ChatFragment : Fragment(){
         super.onViewCreated(view, savedInstanceState)
         nameReceiver.text = group.nameGroup
         imageReceiver.setImageBitmap(getImage(group.imageGroup))
-        adapter = chatViewModel.listMessage.value?.let { ChatRecyclerAdapter(it) }!!
+        adapter = ChatRecyclerAdapter()
+        messageRecyclerView.adapter = adapter
         chatViewModel.listMessage.observe(
             viewLifecycleOwner,
             Observer { messes ->
                 messes?.let {
                     Log.d("ChatFragment", "size of listMessage is ${messes.size}")
-                    adapter.submitList(it)
-                    messageRecyclerView.adapter = adapter
+                    adapter.submitList(messes)
+                    //messageRecyclerView.adapter = adapter
                 }
             })
 
@@ -93,57 +97,29 @@ class ChatFragment : Fragment(){
         }
         moreInfo.setOnClickListener { v ->
             (requireContext() as CallBackWhenSeeMoreInfoGroup).seeForInfoGroup(group)
+        }
+    }
 
-        }
-    }
-    private inner class ChatHolder(var view : View) : RecyclerView.ViewHolder(view) {
-        private lateinit var message : ChatMessage
-        private lateinit var imageMessage : ImageView
-        private lateinit var contentMessage : TextView
-        private lateinit var timeMessage : TextView
-        fun bind(chat: ChatMessage, viewType : Int){
-            this.message = chat
-            if(viewType == CONSTANT.VIEW_TYPE_MESSAGE_SYSTEM){
-                contentMessage = view.findViewById(R.id.messageSystemInChat) as TextView
-                contentMessage.text = chat.message
-                return
-            }
-            imageMessage = view.findViewById(R.id.imageMessage) as ImageView
-            contentMessage = view.findViewById(R.id.contentMessage) as TextView
-            timeMessage = view.findViewById(R.id.timeMessage) as TextView
-            if(viewType == CONSTANT.VIEW_TYPE_RECEIVED_MESSAGE){
-                Firebase.firestore.collection(CONSTANT.KEY_USER).document(chat.senderId)
-                    .get().addOnSuccessListener { value ->
-                        if(value != null){
-                            val imageUser = value.data?.get(CONSTANT.KEY_USER_IMAGE) as String
-                            imageMessage.setImageBitmap(getImage(imageUser))
-                        }
-                    }
-            }
-            else {
-                  imageMessage.setImageBitmap(getImage(user.image))
-            }
-            contentMessage.text = message.message
-            timeMessage.text = message.timeMessage.toString()
-        }
-    }
     private class NoteDiffCallBack : DiffUtil.ItemCallback<ChatMessage>(){
         override fun areItemsTheSame(oldItem: ChatMessage, newItem: ChatMessage): Boolean {
-            return oldItem.senderId == newItem.senderId && oldItem.timeMessage.equals(newItem.timeMessage)
+            Log.d(TAG, "old : $oldItem new $newItem")
+            return oldItem.senderId == newItem.senderId && oldItem.timeMessage == newItem.timeMessage
         }
 
         override fun areContentsTheSame(oldItem: ChatMessage, newItem: ChatMessage): Boolean {
+            Log.d(TAG, "old : $oldItem new $newItem")
             return oldItem == newItem
         }
 
     }
-    private inner class ChatRecyclerAdapter(var chatMessages : MutableList<ChatMessage> ) :
-        ListAdapter<ChatMessage, ChatHolder>(
-            AsyncDifferConfig.Builder<ChatMessage>(NoteDiffCallBack())
+    private inner class ChatRecyclerAdapter :
+        ListAdapter<ChatMessage, ChatRecyclerAdapter.ChatHolder>(
+            AsyncDifferConfig.Builder(NoteDiffCallBack())
                 .setBackgroundThreadExecutor(Executors.newSingleThreadExecutor())
                 .build()
         )
     {
+        private var mapImage : MutableMap<String, String> = mutableMapOf()
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatHolder {
             if(viewType == CONSTANT.VIEW_TYPE_MESSAGE_SYSTEM){
                 return ChatHolder(layoutInflater.inflate(R.layout.message_system, parent, false))
@@ -155,21 +131,63 @@ class ChatFragment : Fragment(){
         }
 
         override fun onBindViewHolder(holder: ChatHolder, position: Int) {
-            holder.bind(chatMessages[position], getItemViewType(position))
+            val chat = getItem(position)
+            holder.bind(chat, getItemViewType(position))
         }
 
         override fun getItemViewType(position: Int): Int {
-            if(chatMessages[position].senderId == CONSTANT.KEY_MESSAGE_SYSTEM_ID){
+            if(getItem(position).senderId == CONSTANT.KEY_MESSAGE_SYSTEM_ID){
                 return CONSTANT.VIEW_TYPE_MESSAGE_SYSTEM
             }
-            if(user.userId.equals(chatMessages[position].senderId)){
-                return CONSTANT.VIEW_TYPE_SEND_MESSAGE
-            }
-            else {
-                return CONSTANT.VIEW_TYPE_RECEIVED_MESSAGE
+            return if(user.userId == getItem(position).senderId){
+                CONSTANT.VIEW_TYPE_SEND_MESSAGE
+            } else {
+                CONSTANT.VIEW_TYPE_RECEIVED_MESSAGE
             }
         }
 
+        override fun submitList(list: MutableList<ChatMessage>?) {
+            super.submitList(list?.let { it.toList() })
+        }
+        private inner class ChatHolder(var view : View) : RecyclerView.ViewHolder(view) {
+            private lateinit var message : ChatMessage
+            private lateinit var imageMessage : ImageView
+            private lateinit var contentMessage : TextView
+            private lateinit var timeMessage : TextView
+            fun bind(chat: ChatMessage, viewType : Int){
+                this.message = chat
+                if(viewType == CONSTANT.VIEW_TYPE_MESSAGE_SYSTEM){
+                    contentMessage = view.findViewById(R.id.messageSystemInChat) as TextView
+                    contentMessage.text = chat.message
+                    return
+                }
+                imageMessage = view.findViewById(R.id.imageMessage) as ImageView
+                contentMessage = view.findViewById(R.id.contentMessage) as TextView
+                timeMessage = view.findViewById(R.id.timeMessage) as TextView
+                if(viewType == CONSTANT.VIEW_TYPE_RECEIVED_MESSAGE){
+                    val image = mapImage.get(chat.senderId)
+                    if(image == null){
+                        Firebase.firestore.collection(CONSTANT.KEY_USER).document(chat.senderId)
+                            .get().addOnSuccessListener { value ->
+                                if(value != null){
+                                    Log.d(TAG, "request chatFragment")
+                                    val imageUser = value.data?.get(CONSTANT.KEY_USER_IMAGE) as String
+                                    imageMessage.setImageBitmap(getImage(imageUser))
+                                    mapImage.put(chat.senderId, imageUser)
+                                }
+                            }
+                    }
+                    else{
+                        imageMessage.setImageBitmap(getImage(image))
+                    }
+                }
+                else {
+                    imageMessage.setImageBitmap(getImage(user.image))
+                }
+                contentMessage.text = message.message
+                timeMessage.text = message.timeMessage.toString()
+            }
+        }
     }
     companion object {
         fun newInstance(user: User, group: Group) : ChatFragment{
@@ -187,6 +205,7 @@ class ChatFragment : Fragment(){
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
     private fun addNewMessage(message : String ){
+        if(message.isBlank()) return
         var messageMap = hashMapOf(
             CONSTANT.KEY_MESSAGE_SENDER_NAME to user.name,
             CONSTANT.KEY_MESSAGE_SENDER_ID to user.userId,

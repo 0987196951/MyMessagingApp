@@ -14,7 +14,7 @@ class SortedListConversationAdapter(adapter: ConversationAdapter) : SortedListAd
     }
 
     override fun areItemsTheSame(item1: Conversation?, item2: Conversation?): Boolean {
-        Log.d(TAG, "${item1?.groupId} vs ${item2?.groupId}" + item1?.groupId.equals(item2?.groupId))
+       // Log.d(TAG, "${item1?.groupId} vs ${item2?.groupId}" + item1?.groupId.equals(item2?.groupId))
         return item1?.groupId.equals(item2?.groupId)
     }
 }
