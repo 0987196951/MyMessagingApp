@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -47,6 +48,9 @@ class ChatFragment : Fragment(){
         super.onCreate(savedInstanceState)
         user = arguments?.getSerializable(CONSTANT.KEY_USER) as User
         group = arguments?.getSerializable(CONSTANT.KEY_GROUP) as Group
+        activity?.window?.setSoftInputMode(
+            WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
+        )
     }
     override fun onCreateView(
         inflater: LayoutInflater,

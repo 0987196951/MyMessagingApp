@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,87 +7,121 @@
     android:clipToPadding="false"
     android:overScrollMode="never"
     android:scrollbars="none">
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/imageProfile"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true">
+    </de.hdodenhof.circleimageview.CircleImageView>
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:textSize="20dp"
+        android:id="@+id/dayCreatedAccount"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/imageProfile"/>
 
-        <FrameLayout
-            android:id="@+id/layoutImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:layout_marginTop="5dp"
+        android:id="@+id/inputEmail"
+        android:importantForAutofill="no"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/dayCreatedAccount"/>
+    <EditText
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/inputName"
+        android:hint="Name"
+        android:imeOptions="actionNext"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/inputEmail"/>
+    <EditText
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/inputDate"
+        android:hint="Date of birth"
+        android:imeOptions="actionNext"
+        android:importantForAutofill="no"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:inputType="text"
+        android:layout_below="@id/inputName"/>
 
-            <com.makeramen.roundedimageview.RoundedImageView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:id="@+id/imageProfile"
-                android:scaleType="centerCrop"
-                app:riv_oval="true"/>
-                />
-        </FrameLayout>
+    <EditText
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/inputPassword"
+        android:hint="@string/password"
+        android:imeOptions="actionDone"
+        android:importantForAutofill="no"
+        android:inputType="textPassword"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/inputDate"/>
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/inputName"
-            android:hint="Name"
-            android:imeOptions="actionNext"
-            android:importantForAutofill="no"
-            android:inputType="text"/>
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/inputDate"
-            android:hint="Date of birth"
-            android:imeOptions="actionNext"
-            android:importantForAutofill="no"
-            android:inputType="text"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20dp"
-            android:id="@+id/dayCreatedAccount"/>
+    <EditText
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/inputConfirmPassword"
+        android:hint="@string/confirm_password"
+        android:imeOptions="actionDone"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:importantForAutofill="no"
+        android:inputType="textPassword"
+        android:layout_below="@+id/inputPassword"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20dp"
-            android:id="@+id/inputEmail"
-            android:importantForAutofill="no" />
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_gravity="center"
+        android:layout_centerInParent="true"
+        android:visibility="invisible" />
+    <Button
+        android:id="@+id/accept_modify"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/accept_modify"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:layout_below="@id/inputConfirmPassword"/>
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/inputPassword"
-            android:hint="@string/password"
-            android:imeOptions="actionDone"
-            android:importantForAutofill="no"
-            android:inputType="textPassword"/>
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:gravity="center_horizontal"-->
+<!--        android:orientation="vertical">-->
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/inputConfirmPassword"
-            android:hint="@string/confirm_password"
-            android:imeOptions="actionDone"
-            android:importantForAutofill="no"
-            android:inputType="textPassword"/>
+<!--        <FrameLayout-->
+<!--            android:id="@+id/layoutImage"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="20dp">-->
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_gravity="center"
-            android:visibility="invisible" />
-        <Button
-            android:id="@+id/accept_modify"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/accept_modify"/>
+<!--            <com.makeramen.roundedimageview.RoundedImageView-->
+<!--                android:layout_width="80dp"-->
+<!--                android:layout_height="80dp"-->
+<!--                android:id="@+id/imageProfile"-->
+<!--                android:scaleType="centerCrop"-->
+<!--                app:riv_oval="true"/>-->
+<!--                />-->
+<!--        </FrameLayout>-->
 
-    </LinearLayout>
 
-</ScrollView>
+
+
+
+
+
+<!--    </LinearLayout>-->
+
+</RelativeLayout>
