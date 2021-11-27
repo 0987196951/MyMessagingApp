@@ -44,6 +44,7 @@ class ChatListViewModelFactory(
                         Log.d(TAG, "error when listen")
                     }
                     if(snapShot != null ){
+
                         for(doc in snapShot.documentChanges){
                                 if( doc.type == DocumentChange.Type.MODIFIED || doc.type == DocumentChange.Type.ADDED){
                                     var mapConversation = doc.document[CONSTANT.KEY_CONVERSATION] as Map<* , *>
