@@ -32,7 +32,6 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/username_profile"
-        android:text="unin2508@gmail.com"
         android:textAlignment="center"
         android:layout_marginTop="5dp"
         android:textSize="25dp"

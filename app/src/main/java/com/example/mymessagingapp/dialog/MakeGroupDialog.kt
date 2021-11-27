@@ -53,7 +53,7 @@ class MakeGroupDialog : DialogFragment() {
                         enterNameGroup.text.toString(),
                         Date(),
                         true,
-                        encodedImage?:Inites.encodeImage(BitmapFactory.decodeResource(resources, R.drawable.groupimage))
+                        encodedImage?:Inites.encodeImage(BitmapFactory.decodeResource(resources, R.drawable.groupimage), 150)
                     )
                     targetFragment.let { fragment ->
                         (fragment as CallBackFromMakeGroup).onMadeGroup(group)
@@ -76,7 +76,7 @@ class MakeGroupDialog : DialogFragment() {
                 val inputStream = requireActivity().contentResolver.openInputStream(imageUri!!)
                 val bitmap = BitmapFactory.decodeStream(inputStream)
                 imageGroup.setImageBitmap(bitmap)
-                encodedImage = Inites.encodeImage(bitmap)
+                encodedImage = Inites.encodeImage(bitmap, 150)
                 Log.d(TAG, "encode Image is : " + encodedImage)
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()

@@ -74,7 +74,7 @@ class SignInFragment : Fragment(){
                         doc.data.get(CONSTANT.KEY_USER_NAME) as String,
                             inputPasswordA,
                             inputEmailA,
-                            Inites.convertTimeStampToDate(doc.data?.get(CONSTANT.KEY_USER_DATE_OF_BIRTH) as Timestamp),
+                            Inites.convertTimeStampToDate(doc.data.get(CONSTANT.KEY_USER_DATE_OF_BIRTH) as Timestamp),
                             Inites.convertTimeStampToDate(doc.data.get(CONSTANT.KEY_USER_CREATE_ACCOUNT) as Timestamp),
                             doc.data.get(CONSTANT.KEY_USER_IMAGE) as String,
                             true

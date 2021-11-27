@@ -1,9 +1,14 @@
 package com.example.mymessagingapp
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.content.DialogInterface
+import android.os.Build
 import android.os.Bundle
+import android.util.DisplayMetrics
+import android.view.Display
 import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
 import com.example.mymessagingapp.utilities.Inites

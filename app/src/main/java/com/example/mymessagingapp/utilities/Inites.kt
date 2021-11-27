@@ -68,12 +68,12 @@ class Inites {
             val bytes = Base64.decode(encodeImage, Base64.DEFAULT)
             return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
         }
-        fun encodeImage(bitmap: Bitmap): String {
-            val previewWidth = 150
+        fun encodeImage(bitmap: Bitmap, preWidth : Int): String {
+            val previewWidth =preWidth
             val previewHeight = bitmap.height * previewWidth / bitmap.width
             val previewBitmap = Bitmap.createScaledBitmap(bitmap, previewWidth, previewHeight, false)
             val byteArrayOutputStream = ByteArrayOutputStream()
-            previewBitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)
+            previewBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
             val bytes = byteArrayOutputStream.toByteArray()
             return Base64.encodeToString(bytes, Base64.DEFAULT)
         }
