@@ -19,12 +19,14 @@ import com.example.mymessagingapp.interfaces.CallBackWhenModifyDataUser
 
 private val DIALOG_MAKE_GROUP = "Make New Group"
 private val REQUEST_MAKE_GROUP = 1
-
+private val REQUEST_ZOOM_PICTURE = 0
+private val DIALOG_ZOOM_PICTURE = "Zoom picture"
 class MoreInfoUser : Fragment(), CallBackFromMakeGroup{
     private lateinit var user : User
     private lateinit var imageUser : ImageView
     private lateinit var modifyInfoUser : TextView
     private lateinit var makeGroupButton : TextView
+    private lateinit var emailUser : TextView
     private lateinit var logOut : TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +46,13 @@ class MoreInfoUser : Fragment(), CallBackFromMakeGroup{
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         imageUser.setImageBitmap(getImage(user.image))
+        imageUser.setOnClickListener {
+            PicturePickerFragment.newInstance(user.image).apply {
+                setTargetFragment(this@MoreInfoUser, REQUEST_ZOOM_PICTURE).apply {
+                    show(this@MoreInfoUser.requireFragmentManager(), DIALOG_ZOOM_PICTURE)
+                }
+            }
+        }
         makeGroupButton.setOnClickListener { v ->
             MakeGroupDialog.newInstance(user).apply {
                 setTargetFragment(this@MoreInfoUser, REQUEST_MAKE_GROUP ).apply {

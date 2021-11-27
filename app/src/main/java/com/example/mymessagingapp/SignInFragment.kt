@@ -25,10 +25,6 @@ class SignInFragment : Fragment(){
     private lateinit var textCreateAccount : TextView
     private lateinit var progressBar : ProgressBar
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
