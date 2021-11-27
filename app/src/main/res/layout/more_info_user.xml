@@ -17,15 +17,14 @@
         android:id="@+id/username_profile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/imageUser"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:text="Nguyễn Linh"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="35dp"
-        android:textStyle="bold"
-        android:layout_below="@+id/imageUser">
-    </TextView>
+        android:textStyle="bold"></TextView>
     <TextView
         android:id="@+id/mail_profile"
         android:layout_width="wrap_content"
@@ -53,8 +52,7 @@
         android:layout_height="40dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="15dp"
-        android:background="@drawable/ic_addgroup"
-        >
+        android:background="@drawable/ic_addgroup">
 
     </Button>
     <Button
