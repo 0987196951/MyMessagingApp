@@ -45,7 +45,6 @@ class ChatListViewModelFactory(
                     }
                     if(snapShot != null ){
                         for(doc in snapShot.documentChanges){
-                            if((doc.document[CONSTANT.KEY_GROUP_IS_GROUP] as Boolean)){
                                 if( doc.type == DocumentChange.Type.MODIFIED || doc.type == DocumentChange.Type.ADDED){
                                     var mapConversation = doc.document[CONSTANT.KEY_CONVERSATION] as Map<* , *>
                                     var groupId = doc.document[CONSTANT.KEY_GROUP_ID] as String
@@ -70,7 +69,6 @@ class ChatListViewModelFactory(
                                         doc.document.get(CONSTANT.KEY_GROUP_IMAGE) as String
                                     ))
                                 }
-                            }
                         }
                         conversationAdapter.notifyObserver()
                     }
