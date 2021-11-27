@@ -7,6 +7,7 @@ import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -24,8 +25,9 @@ private val DIALOG_ZOOM_PICTURE = "Zoom picture"
 class MoreInfoUser : Fragment(), CallBackFromMakeGroup{
     private lateinit var user : User
     private lateinit var imageUser : ImageView
-    private lateinit var modifyInfoUser : TextView
-    private lateinit var makeGroupButton : TextView
+    private lateinit var modifyInfoUser : Button
+    private lateinit var makeGroupButton : Button
+    private lateinit var nameUser : TextView
     private lateinit var emailUser : TextView
     private lateinit var logOut : TextView
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,13 +41,17 @@ class MoreInfoUser : Fragment(), CallBackFromMakeGroup{
     ): View? {
         val view = inflater.inflate(R.layout.more_info_user, container, false)
         imageUser = view.findViewById(R.id.imageUser) as ImageView
-        modifyInfoUser = view.findViewById(R.id.modifyInfoUser) as TextView
-        makeGroupButton = view.findViewById(R.id.makeGroup) as TextView
+        modifyInfoUser = view.findViewById(R.id.modifyInfoUser) as Button
+        emailUser = view.findViewById(R.id.mail_profile) as TextView
+        nameUser = view.findViewById(R.id.username_profile) as TextView
+        makeGroupButton = view.findViewById(R.id.makeGroup) as Button
         logOut = view.findViewById(R.id.logOut) as TextView
         return view
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        nameUser.text = user.name
         imageUser.setImageBitmap(getImage(user.image))
+        emailUser.text = user.gmail
         imageUser.setOnClickListener {
             PicturePickerFragment.newInstance(user.image).apply {
                 setTargetFragment(this@MoreInfoUser, REQUEST_ZOOM_PICTURE).apply {

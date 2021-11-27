@@ -45,9 +45,7 @@
                 android:layout_marginTop="7dp"
                 android:src="@color/design_default_color_primary"
                 androidx:layout_constraintTop_toTopOf="@+id/toolbar"
-                androidx:layout_constraintEnd_toEndOf="@+id/toolbar"
-
-                >
+                androidx:layout_constraintEnd_toEndOf="@+id/toolbar">
 
             </de.hdodenhof.circleimageview.CircleImageView>
             <ImageButton
