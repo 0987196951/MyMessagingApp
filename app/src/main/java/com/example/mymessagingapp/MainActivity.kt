@@ -76,25 +76,9 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFro
                 val group = Group(UUID.randomUUID().toString(),
                     userFound.name, Date(),  false,
                     userFound.image)
-                val hashGroup = mapOf(
-                    CONSTANT.KEY_GROUP_ID to group.groupId,
-                    CONSTANT.KEY_GROUP_NAME to group.nameGroup,
-                    CONSTANT.KEY_GROUP_CREATED to group.createdGroup,
-                    CONSTANT.KEY_GROUP_LIST_MEMBER to listOf(user.userId, userFound.userId),
-                    CONSTANT.KEY_IS_GROUP to false,
-                    CONSTANT.KEY_IMAGE_GROUP to group.imageGroup,
-                    CONSTANT.KEY_CONVERSATION to mapOf(
-                        CONSTANT.KEY_CONVERSATION_SENDER_NAME to "",
-                        CONSTANT.KEY_CONVERSATION_CONTENT to "",
-                        CONSTANT.KEY_CONVERSATION_TIME_SEND to Date()
-                    )
-                )
-                val db= Firebase.firestore
-                db.collection(CONSTANT.KEY_GROUP).document(group.groupId).set(hashGroup)
-                db.collection(CONSTANT.KEY_GROUP).document(group.groupId).collection(CONSTANT.KEY_MESSAGE)
-                val userRef = db.collection(CONSTANT.KEY_USER)
-                userRef.document(user.userId).update(CONSTANT.KEY_USER_LIST_GROUP_ID, FieldValue.arrayUnion(group.groupId))
-                userRef.document(userFound.userId).update(CONSTANT.KEY_USER_LIST_GROUP_ID, FieldValue.arrayUnion(group.groupId))
+                val groupMapping = Group(UUID.randomUUID().toString(), user.name,Date(), false, user.image)
+                makeAChat1_1(user, group, userFound.userId, groupMapping.groupId)
+                makeAChat1_1(userFound, groupMapping, user.userId, group.groupId)
                 val chatFragment = ChatFragment.newInstance(user, group)
                 supportFragmentManager.beginTransaction().replace(R.id.fragment_container, chatFragment)
                     .addToBackStack(null).commit()
@@ -138,21 +122,14 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFro
         val db = Firebase.firestore
         db.collection(CONSTANT.KEY_GROUP)
             .whereEqualTo(CONSTANT.KEY_GROUP_IS_GROUP, false)
+            .whereEqualTo(CONSTANT.KEY_GROUP_RECEIVER, userFound.userId)
             .whereArrayContains(CONSTANT.KEY_GROUP_LIST_MEMBER, user.userId)
             .get()
             .addOnSuccessListener{ value ->
                 if(value != null && !value.isEmpty){
-                    var check = false
                     for (doc in value.documents){
-                        if((doc.data?.get(CONSTANT.KEY_GROUP_LIST_MEMBER) as List<String>).contains(userFound.userId)){
-                            check = true
-                            groupFind = Inites.getGroup(doc as QueryDocumentSnapshot)
-                            callback.callBackGroupExisted(groupFind!!)
-                            break
-                        }
-                    }
-                    if(!check){
-                        callback.callBackGroupNotExist()
+                        groupFind = Inites.getGroup(doc as QueryDocumentSnapshot)
+                        callback.callBackGroupExisted(groupFind!!)
                     }
                 }
                 else {
@@ -169,7 +146,7 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFro
             .addOnSuccessListener { value ->
                 group = Group(groupId, value.data?.get(CONSTANT.KEY_GROUP_NAME) as String,
                     Inites.convertTimeStampToDate(value.data?.get(CONSTANT.KEY_GROUP_CREATED) as Timestamp),
-                    true,
+                    value.data?.get(CONSTANT.KEY_GROUP_IS_GROUP) as Boolean,
                     value.data?.get(CONSTANT.KEY_GROUP_IMAGE) as String
                 )
                 val chatFragment = ChatFragment.newInstance(user, group)
@@ -221,5 +198,27 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFro
         this.openFileOutput(fileName, Context.MODE_PRIVATE).use{
             it?.write("".toByteArray())
         }
+    }
+    fun makeAChat1_1(user : User, group:Group,receiver : String, groupMapping : String){
+        val hashGroup = mapOf(
+            CONSTANT.KEY_GROUP_ID to group.groupId,
+            CONSTANT.KEY_GROUP_NAME to group.nameGroup,
+            CONSTANT.KEY_GROUP_CREATED to group.createdGroup,
+            CONSTANT.KEY_GROUP_LIST_MEMBER to listOf(user.userId),
+            CONSTANT.KEY_IS_GROUP to false,
+            CONSTANT.KEY_IMAGE_GROUP to group.imageGroup,
+            CONSTANT.KEY_GROUP_RECEIVER to receiver,
+            CONSTANT.KEY_GROUP_MAPPING to groupMapping,
+            CONSTANT.KEY_CONVERSATION to mapOf(
+                CONSTANT.KEY_CONVERSATION_SENDER_NAME to "",
+                CONSTANT.KEY_CONVERSATION_CONTENT to "",
+                CONSTANT.KEY_CONVERSATION_TIME_SEND to Date()
+            )
+        )
+        val db= Firebase.firestore
+        db.collection(CONSTANT.KEY_GROUP).document(group.groupId).set(hashGroup)
+        db.collection(CONSTANT.KEY_GROUP).document(group.groupId).collection(CONSTANT.KEY_MESSAGE)
+        val userRef = db.collection(CONSTANT.KEY_USER)
+        userRef.document(user.userId).update(CONSTANT.KEY_USER_LIST_GROUP_ID, FieldValue.arrayUnion(group.groupId))
     }
 }

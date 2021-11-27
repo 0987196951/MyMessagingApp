@@ -76,7 +76,7 @@ class MakeGroupDialog : DialogFragment() {
                 val inputStream = requireActivity().contentResolver.openInputStream(imageUri!!)
                 val bitmap = BitmapFactory.decodeStream(inputStream)
                 imageGroup.setImageBitmap(bitmap)
-                encodedImage = Inites.encodeImage(bitmap, 150)
+                encodedImage = Inites.encodeImage(bitmap, 777)
                 Log.d(TAG, "encode Image is : " + encodedImage)
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()

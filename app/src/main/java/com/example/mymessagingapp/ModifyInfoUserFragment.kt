@@ -139,15 +139,6 @@ class ModifyInfoUserFragment : Fragment() {
             acceptModifyButton.visibility = View.VISIBLE
         }
     }
-    private fun encodeImage(bitmap: Bitmap): String {
-        val previewWidth = 150
-        val previewHeight = bitmap.height * previewWidth / bitmap.width
-        val previewBitmap = Bitmap.createScaledBitmap(bitmap, previewWidth, previewHeight, false)
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        previewBitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)
-        val bytes = byteArrayOutputStream.toByteArray()
-        return Base64.encodeToString(bytes, Base64.DEFAULT)
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode != Activity.RESULT_OK)
@@ -159,7 +150,7 @@ class ModifyInfoUserFragment : Fragment() {
                 val inputStream = requireActivity().contentResolver.openInputStream(imageUri!!)
                 val bitmap = BitmapFactory.decodeStream(inputStream)
                 imageProfile.setImageBitmap(bitmap)
-                encodedImage = encodeImage(bitmap)
+                encodedImage = Inites.encodeImage(bitmap, 777)
                 user.image = encodedImage as String
                 Log.d(TAG, "encode Image is : " + encodedImage)
             } catch (e: FileNotFoundException) {

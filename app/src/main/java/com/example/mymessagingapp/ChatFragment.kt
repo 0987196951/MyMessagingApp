@@ -22,6 +22,7 @@ import com.example.mymessagingapp.interfaces.CallBackAddUserToGroup
 import com.example.mymessagingapp.interfaces.CallBackWhenSeeMoreInfoGroup
 import com.example.mymessagingapp.modelview.ChatViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -33,7 +34,8 @@ import kotlin.collections.HashMap
 private val TAG = "ChatFragmentListener"
 class ChatFragment : Fragment(){
     private lateinit var user : User
-    private lateinit var group : Group 
+    private lateinit var group : Group
+    private var groupMapping : String?= null
     private lateinit var nameReceiver : TextView
     private lateinit var imageReceiver : ImageView
     private lateinit var moreInfo : ImageButton
@@ -217,5 +219,21 @@ class ChatFragment : Fragment(){
             CONSTANT.KEY_MESSAGE_TIME_SEND to Date()
         )
         Firebase.firestore.collection(CONSTANT.KEY_GROUP).document(group.groupId).collection(CONSTANT.KEY_MESSAGE).add(messageMap)
+        if(!group.isGroup){
+            if(groupMapping == null){
+                Firebase.firestore.collection(CONSTANT.KEY_GROUP).document(group.groupId).get()
+                    .addOnSuccessListener { value ->
+                        if(value != null){
+                            groupMapping = value.data?.get(CONSTANT.KEY_GROUP_MAPPING) as String
+                            Firebase.firestore.collection(CONSTANT.KEY_GROUP).document(groupMapping!!)
+                                .collection(CONSTANT.KEY_MESSAGE).add(messageMap)
+                        }
+                    }
+            }
+            else {
+                Firebase.firestore.collection(CONSTANT.KEY_GROUP).document(groupMapping!!)
+                    .collection(CONSTANT.KEY_MESSAGE).add(messageMap)
+            }
+        }
     }
 }

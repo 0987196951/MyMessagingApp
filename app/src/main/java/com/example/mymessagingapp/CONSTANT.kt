@@ -23,6 +23,8 @@ class CONSTANT {
         const val KEY_GROUP_IMAGE = "image_group"
         const val KEY_GROUP = "group"
         const val KEY_GROUP_IS_GROUP = "is_group"
+        const val KEY_GROUP_MAPPING  ="group_mapping"
+        const val KEY_GROUP_RECEIVER = "receiver"
 
         const val KEY_CONVERSATION = "conversation"
         const val KEY_CONVERSATION_SENDER_NAME = "sender_name"
