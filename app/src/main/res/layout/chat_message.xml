@@ -82,50 +82,56 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chatListRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="600dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/hi"
         android:layout_below="@+id/appbar"
         android:layout_marginTop="0dp"
         android:paddingBottom="20dp" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/hi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+        <EditText
+            android:id="@+id/sendMessage"
+            android:layout_width="300dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/background_chatinput"
+            android:hint="Type a message"
+            android:imeOptions="actionDone"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@color/black"
+            androidx:layout_constraintStart_toStartOf="@+id/hi"
+            androidx:layout_constraintTop_toTopOf="@+id/hi">
 
-    <EditText
-        android:id="@+id/sendMessage"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
-        android:layout_below="@+id/chatListRecyclerView"
-        android:layout_marginStart="3dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="12dp"
-        android:background="@drawable/background_chatinput"
-        android:hint="Type a message"
-        android:imeOptions="actionDone"
-        android:importantForAutofill="no"
-        android:inputType="text"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:textColor="@color/black">
 
-    </EditText>
-    <FrameLayout
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginLeft="5dp"
-        android:layout_toEndOf="@id/sendMessage"
-        android:layout_below="@+id/chatListRecyclerView"
-        >
-
-        <Button
-            android:id="@+id/sendMessageButton"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/ic_send"
+        </EditText>
+        <FrameLayout
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginEnd="10dp"
+            androidx:layout_constraintEnd_toEndOf="@+id/hi"
+            android:layout_toEndOf="@id/sendMessage"
             >
-        </Button>
+            <Button
+                android:id="@+id/sendMessageButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/ic_send"
+                >
+            </Button>
 
-    </FrameLayout>
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 <!--    <LinearLayout-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="wrap_content"-->
