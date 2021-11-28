@@ -69,7 +69,6 @@ class SignUpFragment : Fragment() {
             loading(true)
             val callBackInvalid = object: CallBackWhenCheckInvalidSignUpOrModifyInfo{
                 override fun onValid() {
-                    Toast.makeText(context, "make account success", Toast.LENGTH_SHORT).show()
                     signUp()
                 }
 
@@ -97,7 +96,14 @@ class SignUpFragment : Fragment() {
         val userId = UUID.randomUUID().toString()
         user[CONSTANT.KEY_USER_ID] = userId
         user[CONSTANT.KEY_USER_NAME] = inputName.text.toString().trim()
-        user[CONSTANT.KEY_USER_DATE_OF_BIRTH] = Inites.parseDateFromString(inputDate.text.toString())
+        try {
+            user[CONSTANT.KEY_USER_DATE_OF_BIRTH] = Inites.parseDateFromString(inputDate.text.toString())
+        }catch ( e : Exception){
+            loading(false)
+            showToast("you must input date of birth to format : dd/mm/yyyy")
+            return
+        }
+        Toast.makeText(context, "make account success", Toast.LENGTH_SHORT).show()
         user[CONSTANT.KEY_USER_GMAIL] = inputEmail.text.toString()
         user[CONSTANT.KEY_USER_PASSWORD] = inputPassword.text.toString()
         user[CONSTANT.KEY_USER_IMAGE] = encodedImage
