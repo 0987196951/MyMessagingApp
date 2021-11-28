@@ -163,6 +163,9 @@ class SignUpFragment : Fragment() {
             loading(false)
             showToast("Enter Name")
             return
+        }else if (inputName.text.toString().trim() == "admin"){
+            loading(false)
+            showToast("can't sign up with name 'admin'")
         }
         else if (inputDate.text.toString().trim().isEmpty()) {
             loading(false)

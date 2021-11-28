@@ -104,9 +104,12 @@ class ModifyInfoUserFragment : Fragment() {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
     fun checkInvalid(isClickPassword : Boolean) : Boolean {
-
+        loading(false)
         if (inputName.text.toString().trim().isEmpty()) {
             showToast("Enter Name")
+            return false
+        }else if(inputName.text.toString().trim() == "admin"){
+            showToast("can't make name is 'admin")
             return false
         }
         else if (inputDate.text.toString().trim().isEmpty()) {
