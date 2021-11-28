@@ -67,9 +67,9 @@ class ChatFragment : Fragment(){
             moreInfo.visibility = View.GONE
         }
         messageRecyclerView = view.findViewById(R.id.chatListRecyclerView) as RecyclerView
-        var linearLayoutManager = LinearLayoutManager(context)
-        linearLayoutManager.reverseLayout = false
+        var linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         linearLayoutManager.stackFromEnd = true
+        linearLayoutManager.isSmoothScrollbarEnabled = true
         messageRecyclerView.layoutManager = linearLayoutManager
         sendingMessage = view.findViewById(R.id.sendMessage) as EditText
         sendingMessageButton = view.findViewById(R.id.sendMessageButton) as Button
@@ -88,6 +88,7 @@ class ChatFragment : Fragment(){
                 messes?.let {
                     Log.d("ChatFragment", "size of listMessage is ${messes.size}")
                     adapter.submitList(messes)
+                    messageRecyclerView.scrollToPosition(adapter.itemCount-1)
                     //messageRecyclerView.adapter = adapter
                 }
             })

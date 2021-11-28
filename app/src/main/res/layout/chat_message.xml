@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android = "http://schemas.android.com/apk/res/android"
     xmlns:androidx = "http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app = "http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -9,14 +10,9 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
-
-
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
@@ -34,6 +30,7 @@
                 androidx:layout_constraintTop_toTopOf="parent"
                 androidx:layout_constraintStart_toStartOf="parent"
                 android:background="@color/white"
+                android:visibility="gone"
                 >
 
             </ImageButton>
@@ -86,7 +83,9 @@
         android:id="@+id/chatListRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="600dp"
-        android:layout_below="@+id/appbar" />
+        android:layout_below="@+id/appbar"
+        android:layout_marginTop="0dp"
+        android:paddingBottom="20dp" />
 
     <EditText
         android:id="@+id/sendMessage"

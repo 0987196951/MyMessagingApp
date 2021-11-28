@@ -149,11 +149,13 @@ class MainActivity : AppCompatActivity(), CallBackFromListUserFound, CallBackFro
                     value.data?.get(CONSTANT.KEY_GROUP_IS_GROUP) as Boolean,
                     value.data?.get(CONSTANT.KEY_GROUP_IMAGE) as String
                 )
+            }.addOnFailureListener{ e->
+                Log.d("Inites" ,"Can't get group")
+            }
+            .continueWith {
                 val chatFragment = ChatFragment.newInstance(user, group)
                 supportFragmentManager.beginTransaction().replace(R.id.fragment_container, chatFragment)
                     .addToBackStack(null).commit()
-            }.addOnFailureListener{ e->
-                Log.d("Inites" ,"Can't get group")
             }
     }
 

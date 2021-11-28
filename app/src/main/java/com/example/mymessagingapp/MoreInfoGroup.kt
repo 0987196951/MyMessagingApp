@@ -1,6 +1,11 @@
 package com.example.mymessagingapp
 
+import android.app.Activity
+import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,12 +25,15 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.io.FileNotFoundException
 import java.util.*
 
-private val REQUEST_SEE_LIST_MEMBER = 0
-private val DIALOG_SEE_LIST_MEMBER = "List Member"
-private val REQUEST_FIND_OTHER_USER = 1
-private val DIALOG_FIND_OTHER_USER = "Find Other User"
+private const val REQUEST_SEE_LIST_MEMBER = 0
+private const val DIALOG_SEE_LIST_MEMBER = "List Member"
+private const val REQUEST_FIND_OTHER_USER = 1
+private const val DIALOG_FIND_OTHER_USER = "Find Other User"
+private const val RESULT_OK = 1
+private const val TAG = "MoreInfoGroup"
 class MoreInfoGroup : Fragment(), CallBackWhenSelectOtherUserInGroup, CallBackAddUserToGroup {
     private lateinit var group : Group
     private lateinit var user : User
@@ -56,6 +64,11 @@ class MoreInfoGroup : Fragment(), CallBackWhenSelectOtherUserInGroup, CallBackAd
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         imageGroup.setImageBitmap(Inites.getImage(group.imageGroup))
+        imageGroup.setOnClickListener { v ->
+            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            startActivityForResult(intent, RESULT_OK)
+        }
         listMember.setOnClickListener{ v ->
             ListMember.newInstance(group).apply{
                 setTargetFragment(this@MoreInfoGroup, REQUEST_SEE_LIST_MEMBER).apply {
@@ -94,7 +107,27 @@ class MoreInfoGroup : Fragment(), CallBackWhenSelectOtherUserInGroup, CallBackAd
             }
         }
     }
-
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode != Activity.RESULT_OK)
+            return
+        Log.d(TAG, "alo alo")
+        if (requestCode == RESULT_OK && data != null) {
+            val imageUri = data!!.data
+            try {
+                val inputStream = requireActivity().contentResolver.openInputStream(imageUri!!)
+                val bitmap = BitmapFactory.decodeStream(inputStream)
+                imageGroup.setImageBitmap(bitmap)
+                encodeImage = Inites.encodeImage(bitmap, 777)
+                group.imageGroup = encodeImage as String
+                Firebase.firestore.collection(CONSTANT.KEY_GROUP).document(group.groupId)
+                    .update(mapOf(
+                        CONSTANT.KEY_GROUP_IMAGE to encodeImage
+                    ))
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
+            }
+        }
+    }
     override fun onUserSelect(user: User) {
         requireActivity().supportFragmentManager.popBackStack()
         requireActivity().supportFragmentManager.popBackStack()

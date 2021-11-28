@@ -43,7 +43,13 @@ class  ConversationAdapter(private var user: User, private var list: List<Conver
         }
         fun bind(conversation : Conversation){
             this.conversation = conversation
-            chatListLastMessage.text = conversation.senderName + " : " + conversation.content
+
+            if(conversation.content.length < 20 ){
+                chatListLastMessage.text = "${conversation.senderName} : ${conversation.content}"
+            }
+            else {
+                chatListLastMessage.text = "${conversation.senderName} : ${conversation.content.substring(0, 20)}..."
+            }
             if(conversation.senderName.isEmpty()) chatListLastMessage.visibility = View.GONE
             chatListNameGroup.text = conversation.groupName
             chatListImageGroup.setImageBitmap(Inites.getImage(conversation.imageGroup))
