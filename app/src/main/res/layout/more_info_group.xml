@@ -1,33 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android = "http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <ImageView
+
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imageGroup"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:layout_gravity="center"/>
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/editgroup"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageGroup"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/background_chatinput">
+
+        <EditText
+            android:id="@+id/nameGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLength="15"
+            android:maxWidth="220dp"
+            android:layout_marginStart="20dp"
+            android:text="Nguyen Linh"
+            android:textAlignment="textStart"
+            android:textColor="@color/black"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"></EditText>
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/ic_baseline_check_24"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+        </Button>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
     <TextView
         android:id="@+id/seeListMember"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/editgroup"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:padding="10dp"
         android:text="@string/list_member"
-        android:textSize="20sp"
-        android:padding="10dp"/>
-    <TextView
-        android:id="@+id/addMember"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/add_member"
-        android:textSize="20sp"
-        android:padding="10dp" />
-    <TextView
-        android:id="@+id/outGroup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:text="@string/out_group"/>
+        android:textSize="20sp" />
 
-</LinearLayout>
+    <Button
+        android:id="@+id/addMember"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/ic_addgroup"
+        />
+
+    <Button
+        android:id="@+id/outGroup"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="300dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/ic_logout"
+        />
+
+</RelativeLayout>
