@@ -36,7 +36,7 @@
             app:layout_constraintTop_toTopOf="parent"></EditText>
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/acceptChangeNameGroup"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="@drawable/ic_baseline_check_24"

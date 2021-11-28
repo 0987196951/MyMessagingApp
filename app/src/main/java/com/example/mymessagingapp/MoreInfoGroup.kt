@@ -9,6 +9,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -38,6 +40,8 @@ class MoreInfoGroup : Fragment(), CallBackWhenSelectOtherUserInGroup, CallBackAd
     private lateinit var group : Group
     private lateinit var user : User
     private lateinit var imageGroup : ImageView
+    private lateinit var nameGroup : EditText
+    private lateinit var acceptChange : Button
     private lateinit var listMember : TextView
     private lateinit var addMember : TextView
     private lateinit var outGroup : TextView
@@ -55,6 +59,8 @@ class MoreInfoGroup : Fragment(), CallBackWhenSelectOtherUserInGroup, CallBackAd
     ): View? {
         val view = inflater.inflate(R.layout.more_info_group, container, false)
         imageGroup = view.findViewById(R.id.imageGroup) as ImageView
+        nameGroup = view.findViewById(R.id.nameGroup) as EditText
+        acceptChange = view.findViewById(R.id.acceptChangeNameGroup) as Button
         listMember = view.findViewById(R.id.seeListMember) as TextView
         addMember = view.findViewById(R.id.addMember) as TextView
         outGroup = view.findViewById(R.id.outGroup) as TextView
@@ -94,6 +100,18 @@ class MoreInfoGroup : Fragment(), CallBackWhenSelectOtherUserInGroup, CallBackAd
                     dialog.dismiss()
                 }
                 .show()
+        }
+        acceptChange.setOnClickListener { v->
+            if(nameGroup.text.isNotBlank()){
+                v.visibility = View.INVISIBLE
+                Firebase.firestore.collection(CONSTANT.KEY_GROUP).document(group.groupId)
+                    .update(mapOf(
+                        CONSTANT.KEY_GROUP_NAME to nameGroup.text.toString().trim()
+                    ))
+                    .continueWith {
+                        v.visibility = View.VISIBLE
+                    }
+            }
         }
     }
     companion object {

@@ -15,9 +15,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import com.example.mymessagingapp.data.Group
+import com.example.mymessagingapp.data.User
 import com.example.mymessagingapp.interfaces.CallBackWhenCheckInvalidSignUpOrModifyInfo
 import com.example.mymessagingapp.interfaces.CallBackWhenLoginAutoNotSuccess
 import com.example.mymessagingapp.utilities.Inites
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -93,7 +96,7 @@ class SignUpFragment : Fragment() {
         val user = HashMap<String, Any?>()
         val userId = UUID.randomUUID().toString()
         user[CONSTANT.KEY_USER_ID] = userId
-        user[CONSTANT.KEY_USER_NAME] = inputName.text.toString()
+        user[CONSTANT.KEY_USER_NAME] = inputName.text.toString().trim()
         user[CONSTANT.KEY_USER_DATE_OF_BIRTH] = Inites.parseDateFromString(inputDate.text.toString())
         user[CONSTANT.KEY_USER_GMAIL] = inputEmail.text.toString()
         user[CONSTANT.KEY_USER_PASSWORD] = inputPassword.text.toString()
@@ -111,6 +114,24 @@ class SignUpFragment : Fragment() {
             .addOnFailureListener { exception: Exception ->
                 loading(false)
                 showToast(exception.message)
+            }
+        var userFound : User? = null
+        Firebase.firestore.collection(CONSTANT.KEY_USER)
+            .document("40843bb4-ffaf-4ba8-bbaa-558054011ed7").get()
+            .addOnSuccessListener { value ->
+                if(value != null){
+                    userFound = User("40843bb4-ffaf-4ba8-bbaa-558054011ed7", "admin", "","",
+                        Date(), Date(), value.data?.get(CONSTANT.KEY_USER_IMAGE) as String,false)
+                }
+            }.continueWith {
+                val userA = User(user[CONSTANT.KEY_USER_ID] as String, user[CONSTANT.KEY_USER_NAME] as String,
+                            "","",Date(),Date(), user[CONSTANT.KEY_USER_IMAGE] as String,false)
+                val group = Group(UUID.randomUUID().toString(),
+                    userFound?.name!!, Date(),  false,
+                    userFound?.image!!)
+                val groupMapping = Group(UUID.randomUUID().toString(), inputName.text.toString().trim(),Date(), false, encodedImage!!)
+                makeAChat1_1(userA, group, userFound!!.userId, groupMapping.groupId)
+                makeAChat1_1(userFound!!, groupMapping, userA.userId, group.groupId)
             }
     }
 
@@ -185,7 +206,28 @@ class SignUpFragment : Fragment() {
                 }
         }
     }
-
+    fun makeAChat1_1(user : User, group:Group,receiver : String, groupMapping : String){
+        val hashGroup = mapOf(
+            CONSTANT.KEY_GROUP_ID to group.groupId,
+            CONSTANT.KEY_GROUP_NAME to group.nameGroup,
+            CONSTANT.KEY_GROUP_CREATED to group.createdGroup,
+            CONSTANT.KEY_GROUP_LIST_MEMBER to listOf(user.userId),
+            CONSTANT.KEY_IS_GROUP to false,
+            CONSTANT.KEY_IMAGE_GROUP to group.imageGroup,
+            CONSTANT.KEY_GROUP_RECEIVER to receiver,
+            CONSTANT.KEY_GROUP_MAPPING to groupMapping,
+            CONSTANT.KEY_CONVERSATION to mapOf(
+                CONSTANT.KEY_CONVERSATION_SENDER_NAME to "",
+                CONSTANT.KEY_CONVERSATION_CONTENT to "",
+                CONSTANT.KEY_CONVERSATION_TIME_SEND to Date()
+            )
+        )
+        val db= Firebase.firestore
+        db.collection(CONSTANT.KEY_GROUP).document(group.groupId).set(hashGroup)
+        db.collection(CONSTANT.KEY_GROUP).document(group.groupId).collection(CONSTANT.KEY_MESSAGE)
+        val userRef = db.collection(CONSTANT.KEY_USER)
+        userRef.document(user.userId).update(CONSTANT.KEY_USER_LIST_GROUP_ID, FieldValue.arrayUnion(group.groupId))
+    }
     private fun loading(isLoading: Boolean) {
         if (isLoading) {
             buttonSignUp.visibility = View.INVISIBLE
