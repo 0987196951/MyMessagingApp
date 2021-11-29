@@ -24,6 +24,7 @@ private val TAG = "ChatViewModel"
 class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvider.Factory{
     private val db = Firebase.firestore
     private var check : Boolean = false
+    private var groupMapping : String? = null
     var listMessage : MutableLiveData<MutableList<ChatMessage>> = MutableLiveData(mutableListOf<ChatMessage>())
     init {
         /*db.collection(CONSTANT.KEY_GROUP)
@@ -37,6 +38,14 @@ class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvide
                 }
                 listMessage.notifyObserver()
             }*/
+        if(group.isGroup == true){
+            db.collection(CONSTANT.KEY_GROUP).document(group.groupId).get()
+                .addOnSuccessListener { value ->
+                    if(value != null){
+                        groupMapping = value.data?.get(CONSTANT.KEY_GROUP_MAPPING) as String
+                    }
+                }
+        }
         listenerChatMessageChange()
     }
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -64,6 +73,16 @@ class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvide
                             }
                             if(senderId != CONSTANT.KEY_MESSAGE_SYSTEM_ID){
                                 db.collection(CONSTANT.KEY_GROUP).document(group.groupId)
+                                    .update(mapOf(
+                                        CONSTANT.KEY_CONVERSATION to mapOf(
+                                            CONSTANT.KEY_CONVERSATION_SENDER_NAME to senderName,
+                                            CONSTANT.KEY_CONVERSATION_CONTENT to message,
+                                            CONSTANT.KEY_CONVERSATION_TIME_SEND to timeMessage
+                                        )
+                                    ))
+                            }
+                            if(group.isGroup){
+                                db.collection(CONSTANT.KEY_GROUP).document(groupMapping!!)
                                     .update(mapOf(
                                         CONSTANT.KEY_CONVERSATION to mapOf(
                                             CONSTANT.KEY_CONVERSATION_SENDER_NAME to senderName,

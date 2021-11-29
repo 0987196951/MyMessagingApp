@@ -87,11 +87,13 @@
         android:layout_below="@+id/appbar"
         android:layout_marginTop="0dp"
         android:paddingBottom="20dp" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/hi"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">
+
         <EditText
             android:id="@+id/sendMessage"
             android:layout_width="300dp"
@@ -111,22 +113,21 @@
 
 
         </EditText>
+
         <FrameLayout
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginTop="8dp"
             android:layout_marginLeft="5dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="10dp"
-            androidx:layout_constraintEnd_toEndOf="@+id/hi"
             android:layout_toEndOf="@id/sendMessage"
-            >
+            androidx:layout_constraintEnd_toEndOf="@+id/hi">
+
             <Button
                 android:id="@+id/sendMessageButton"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/ic_send"
-                >
-            </Button>
+                android:background="@drawable/ic_send"></Button>
 
         </FrameLayout>
 

@@ -69,7 +69,7 @@ class Inites {
             return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
         }
         fun encodeImage(bitmap: Bitmap, preWidth : Int): String {
-            val previewWidth =preWidth
+            val previewWidth = preWidth
             val previewHeight = bitmap.height * previewWidth / bitmap.width
             val previewBitmap = Bitmap.createScaledBitmap(bitmap, previewWidth, previewHeight, false)
             val byteArrayOutputStream = ByteArrayOutputStream()
