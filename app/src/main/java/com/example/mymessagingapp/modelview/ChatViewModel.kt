@@ -38,7 +38,7 @@ class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvide
                 }
                 listMessage.notifyObserver()
             }*/
-        if(group.isGroup == true){
+        if(!group.isGroup){
             db.collection(CONSTANT.KEY_GROUP).document(group.groupId).get()
                 .addOnSuccessListener { value ->
                     if(value != null){
