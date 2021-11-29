@@ -81,7 +81,7 @@ class ChatViewModelFactory(val user: User, val group : Group) : ViewModelProvide
                                         )
                                     ))
                             }
-                            if(group.isGroup){
+                            if(!group.isGroup){
                                 db.collection(CONSTANT.KEY_GROUP).document(groupMapping!!)
                                     .update(mapOf(
                                         CONSTANT.KEY_CONVERSATION to mapOf(
