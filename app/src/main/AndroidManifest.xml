@@ -18,7 +18,7 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/black" />
         <activity
-            android:name="com.example.mymessagingapp.MainActivity"
+            android:name="com.example.mymessagingapp.Main.main.MainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize" >
             <intent-filter>
@@ -28,7 +28,7 @@
         </activity>
 
         <service
-            android:name="com.example.mymessagingapp.firebase.MyFireBaseMessaging"
+            android:name="com.example.mymessagingapp.Main.firebase.MyFireBaseMessaging"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
