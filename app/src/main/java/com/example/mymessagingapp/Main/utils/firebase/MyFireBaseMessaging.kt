@@ -1,4 +1,4 @@
-package com.example.mymessagingapp.Main.system.firebase
+package com.example.mymessagingapp.Main.utils.firebase
 
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
