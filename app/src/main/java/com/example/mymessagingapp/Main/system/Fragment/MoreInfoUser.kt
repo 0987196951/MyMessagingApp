@@ -18,6 +18,7 @@ import com.example.mymessagingapp.Main.system.dialog.MakeGroupDialog
 import com.example.mymessagingapp.Main.system.interfaces.CallBackFromMakeGroup
 import com.example.mymessagingapp.Main.system.interfaces.CallBackWhenLogOut
 import com.example.mymessagingapp.Main.system.interfaces.CallBackWhenModifyDataUser
+import com.example.mymessagingapp.Main.utils.PicturePickerFragment
 import com.example.mymessagingapp.R
 
 private val DIALOG_MAKE_GROUP = "Make New Group"
